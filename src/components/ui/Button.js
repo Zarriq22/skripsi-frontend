@@ -11,14 +11,18 @@ class Button extends Component {
         console.log('Button di tekan')
     }
     render() {
+        const { cssClass, text, onClick, disabled, style, visible = true  } = this.props
+
+        if (!visible) return null;
+        
         return (
             <button 
-                className={`btn ${this.props.buttonType ? `${this.props.buttonType}` : 'btn-primary'} ${this.props.cssClass}`} 
-                onClick={this.props.onClick ? this.props.onClick : this.onClick()}
-                style={this.props.style}
-                disabled={this.props.disabled}
+                className={`btn ${cssClass}`} 
+                onClick={onClick ? onClick : this.onClick()}
+                style={style}
+                disabled={disabled}
             >
-                {this.props.text}
+                {text}
             </button>
         );
     }

@@ -1,0 +1,58 @@
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.popup {
+  position: absolute;
+  width: 500px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  border-radius: 12px;
+}
+  
+.popup-header {
+  padding: 0px 12px 12px 12px;
+  border-bottom: 1px solid #d2caca;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.popup-body {
+  padding: 16px 0px 16px 0px;
+}
+
+.popup-content {
+  height: 100%;
+  position: relative;
+}
+
+.popup-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  position: absolute;
+  bottom: 0;
+  right: 12px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-weight: 500;
+  font-size: 16px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+}
+
+.close-btn:hover {
+  color: red;
+}

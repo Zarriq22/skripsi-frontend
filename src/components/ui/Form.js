@@ -8,21 +8,34 @@ class Form extends Component {
         const initialFormState = {};
         if (this.props.dataField) {
             this.props.dataField.forEach(field => {
-                initialFormState[field.name] = field.defaultValue || '';
+                initialFormState[field.name] = field.defaultValue || null;
             });
         }
         
         this.state = {
-            formData: initialFormState,
-            errors: {}
+            formData: {},
+            errors: {},
         };
         
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
+
+    validatePassword = (password) => {
+        const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return PASSWORD_REGEX.test(password);
+    }
     
     handleChange = (e) => {
         const { name, value } = e.target;
+        let error = '';
+
+        if (name === 'confirmPassword') {
+            if (value !== this.state.formData.password) {
+                error = 'Password tidak cocok';
+            }
+        }
+
         this.setState(prevState => ({
             formData: {
                 ...prevState.formData,
@@ -30,27 +43,48 @@ class Form extends Component {
             },
             errors: {
                 ...prevState.errors,
-                [name]: '' // Clear error when user types
+                [name]: error
             }
         }));
     }
 
     handleFileChange = (e) => {
         const dataField = this.props.dataField.find(field => field.name === e.target.name);
-        const file = e.target.files[0];
-        const reader = new FileReader();
-
-        reader.onloadend = () => {
-            this.setState(prevState => ({
-            formData: {
-                ...prevState.formData,
-                [dataField.name]: reader.result // ← Base64-nya disimpan
+        const files = e.target.files;
+        const isMultiple = dataField.multiple;
+    
+        if (isMultiple) {
+            const readers = Array.from(files).map(file => {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+            });
+    
+            Promise.all(readers).then(results => {
+                this.setState(prevState => ({
+                    formData: {
+                        ...prevState.formData,
+                        [dataField.name]: results
+                    }
+                }));
+            });
+        } else {
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                this.setState(prevState => ({
+                    formData: {
+                        ...prevState.formData,
+                        [dataField.name]: reader.result
+                    }
+                }));
+            };
+            if (file) {
+                reader.readAsDataURL(file);
             }
-            }));
-        };
-
-        if (file) {
-            reader.readAsDataURL(file);
         }
     }
     
@@ -90,83 +124,157 @@ class Form extends Component {
         const passwordInput = document.getElementById(fieldName);
     
         if (passwordInput.type === 'password') {
-          passwordInput.type = 'text';
+            passwordInput.type = 'text';
         } else {
-          passwordInput.type = 'password';
+            passwordInput.type = 'password';
         }
-      };
+    }
+
+    setFormData = (data) => {
+        const filledData = {};
+
+        this.props.dataField.forEach(field => {
+            // Ambil dari data kalo ada, kalau enggak pakai defaultValue
+            filledData[field.name] = data[field.name] ?? field.defaultValue ?? '';
+            filledData['_id'] = data['_id'] ?? field.defaultValue ?? '';
+
+        });
+
+        this.setState({ formData: filledData });
+    };
     
     renderField = (field) => {
         const { formData, errors } = this.state;
         const value = formData[field.name] || '';
         const error = errors[field.name] || null;
+
+        if (field.visible === false) {
+            return null;
+        }
         
         // Get options for select/datalist
         const options = field.dataSource 
             ? (this.props.dataSource && this.props.dataSource[field.dataSource]) || []
             : [];
+
+        const fieldStyle = {
+            display: field.visible === false ? 'none' : undefined
+        };
+
+         // Fungsi untuk menentukan apakah field harus di-render
+        const shouldRenderField = () => {
+            // Jika ada fungsi visible, evaluasi fungsi tersebut
+            if (typeof field.visible === 'function') {
+                return field.visible(formData);
+            }
+            // Jika visible adalah boolean, gunakan nilai tersebut
+            return field.visible !== false;
+        };
+        
+        if (!shouldRenderField()) {
+            return null;
+        }
         
         switch (field.type) {
             case 'select':
                 return (
                     <div key={field.name} className="form-group">
-                        <label htmlFor={field.name}>{field.label}</label>
-                        <select
-                            id={field.name}
-                            name={field.name}
-                            value={value}
-                            onChange={this.handleChange}
-                            className={`form-input ${error ? 'is-invalid' : ''}`}
-                            required={field.required}
-                        >
-                            <option value="">Select {field.label}</option>
-                            {options.map(option => (
-                                <option key={option.value} value={option.value}>
-                                    {option.label}
-                                </option>
-                            ))}
-                        </select>
-                        {error && <div className="invalid-feedback">{error}</div>}
+                        <div className="container-fluid">
+                            <div className="row" style={fieldStyle}>
+                                <div className="col-md-12 form-control">
+                                    <div className="col-md-4">
+                                        <label htmlFor={field.name}>{field.label}</label>
+                                    </div>
+                                    <div className="col-md-8">
+                                        <select
+                                            id={field.name}
+                                            name={field.name}
+                                            value={value}
+                                            onChange={this.handleChange}
+                                            className={`form-input ${error ? 'is-invalid' : ''}`}
+                                            required={field.required}
+                                            disabled={field.readOnly || this.props.readOnly}
+                                        >
+                                            <option value="">Select {field.label}</option>
+                                            {options.map(option => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {error && <div className="invalid-feedback">{error}</div>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 );
                 
             case 'textarea':
                 return (
                     <div key={field.name} className="form-group">
-                        <label htmlFor={field.name}>{field.label}</label>
-                        <textarea
-                            id={field.name}
-                            name={field.name}
-                            value={value}
-                            onChange={this.handleChange}
-                            className={`form-input ${error ? 'is-invalid' : ''}`}
-                            required={field.required}
-                            rows={field.rows || 3}
-                        />
-                        {error && <div className="invalid-feedback">{error}</div>}
+                        <div className="container-fluid">
+                            <div className="row" style={fieldStyle}>
+                                <div className="col-md-12 form-control" style={{ alignItems: 'flex-start' }}>
+                                    <div className="col-md-4">
+                                        <label htmlFor={field.name}>{field.label}</label>
+                                    </div>
+                                    <div className="col-md-8">
+                                        <textarea
+                                            id={field.name}
+                                            name={field.name}
+                                            value={value}
+                                            onChange={this.handleChange}
+                                            className={`form-input ${error ? 'is-invalid' : ''}`}
+                                            required={field.required}
+                                            rows={field.rows || 3}
+                                            style={{
+                                                height: field.height || '100px',
+                                                maxHeight: field.maxHeight || '100px', // disable manual resize
+                                            }}  
+                                            placeholder={field.placeholder || 'Masukan Deskripsi'}
+                                            disabled={field.readOnly || this.props.readOnly}
+                                        />
+                                        {error && <div className="invalid-feedback">{error}</div>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 );
                 
             case 'checkbox':
                 return (
-                    <div key={field.name} className="form-check">
-                        <input
-                            type="checkbox"
-                            id={field.name}
-                            name={field.name}
-                            checked={!!value}
-                            onChange={(e) => this.handleChange({
-                                target: {
-                                    name: field.name,
-                                    value: e.target.checked
-                                }
-                            })}
-                            className={`form-check-input ${error ? 'is-invalid' : ''}`}
-                        />
-                        <label className="form-check-label" htmlFor={field.name}>
-                            {field.label}
-                        </label>
-                        {error && <div className="invalid-feedback">{error}</div>}
+                    <div key={field.name} className="form-group">
+                        <div className="container-fluid">
+                            <div className="row" style={fieldStyle}>
+                                <div className="col-md-12 form-control">
+                                    <div className="col-md-4">
+                                        <label className="form-check-label" htmlFor={field.name}>
+                                            {field.label}
+                                        </label>
+                                    </div>
+                                    <div className="col-md-8">
+                                        <input
+                                            type="checkbox"
+                                            id={field.name}
+                                            name={field.name}
+                                            checked={!!value}
+                                            onChange={(e) => this.handleChange({
+                                                target: {
+                                                    name: field.name,
+                                                    value: e.target.checked
+                                                }
+                                            })}
+                                            className={`form-check-input ${error ? 'is-invalid' : ''}`}
+                                            required={field.required}
+                                            disabled={field.readOnly || this.props.readOnly}
+                                        />
+                                        {error && <div className="invalid-feedback">{error}</div>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 );
 
@@ -174,7 +282,7 @@ class Form extends Component {
                 return (
                     <div key={field.name} className="form-group">
                         <div className="container-fluid">
-                            <div className="row">
+                            <div className="row" style={fieldStyle}>
                                 <div className="col-md-12 form-control">
                                     <div className="col-md-4">
                                         <label htmlFor={field.name}>{field.label}</label>
@@ -186,9 +294,11 @@ class Form extends Component {
                                             name={field.name}
                                             value={value}
                                             onChange={this.handleChange}
+                                            placeholder={'Masukan Password'}
                                             className={`form-input ${error ? 'is-invalid' : ''} ${field.className || ''}`} // Support custom class
+                                            disabled={field.readOnly || this.props.readOnly}
                                         />
-                                        <i className="fa fa-eye" onClick={() => this.togglePasswordVisibility(field.name)} style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} aria-hidden="true"></i>
+                                        <i className={"fa fa-eye"} onClick={() => this.togglePasswordVisibility(field.name)} style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} aria-hidden="true"></i>
                                         {error && <div className="invalid-feedback">{error}</div>}
                                     </div>
                                 </div>
@@ -201,7 +311,7 @@ class Form extends Component {
                 return (
                     <div key={field.name} className="form-group">
                         <div className="container-fluid">
-                            <div className="row">
+                            <div className="row" style={fieldStyle}>
                                 <div className="col-md-12 form-control">
                                     <div className="col-md-4">
                                         <label htmlFor={field.name}>{field.label}</label>
@@ -214,10 +324,28 @@ class Form extends Component {
                                             accept={field.accept || 'image/*'}
                                             onChange={this.handleFileChange}
                                             className={`form-input ${error ? 'is-invalid' : ''} ${field.className || ''}`} // Support custom class
+                                            disabled={field.readOnly || this.props.readOnly}
+                                            multiple={field.multiple}
                                         />
                                         {error && <div className="invalid-feedback">{error}</div>}
                                     </div>
                                 </div>
+                                {field.multiple && Array.isArray(formData[field.name]) && formData[field.name].map((img, index) => (
+                                    <img
+                                        key={index}
+                                        src={img}
+                                        alt={`Preview-${index}`}
+                                        style={{ maxWidth: '100px', marginTop: '10px', marginRight: '10px' }}
+                                    />
+                                ))}
+
+                                {!field.multiple && formData[field.name] && (
+                                    <img 
+                                        src={formData[field.name]} 
+                                        alt="Preview" 
+                                        style={{ maxWidth: '100px', marginTop: '10px' }} 
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>
@@ -227,7 +355,7 @@ class Form extends Component {
                 return (
                     <div key={field.name} className="form-group">
                         <div className="container-fluid">
-                            <div className="row">
+                            <div className="row" style={fieldStyle}>
                                 <div className="col-md-12 form-control">
                                     <div className="col-md-4">
                                         <label htmlFor={field.name}>{field.label}</label>
@@ -243,6 +371,7 @@ class Form extends Component {
                                             placeholder={field.placeholder}
                                             required={field.required}
                                             pattern={field.pattern}
+                                            disabled={field.readOnly || this.props.readOnly}
                                         />
                                         {error && <div className="invalid-feedback">{error}</div>}
                                     </div>
@@ -266,12 +395,14 @@ class Form extends Component {
                 {formTitle && <h2>{formTitle}</h2>}
                 <form onSubmit={this.handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {dataField.map(field => this.renderField(field))}
-                    
-                    <div className="text-center col-md-12">
-                        <button type="submit" className="btn btn-primary">
-                            {submitButtonText || 'Submit'}
-                        </button>
-                    </div>
+
+                    {this.props.submitButtonText && 
+                        <div className="text-center col-md-12">
+                            <button type="submit" className="btn btn-primary">
+                                {submitButtonText || 'Submit'}
+                            </button>
+                        </div>
+                    }
 
                     <div>
                         <footer>{renderFooter ? renderFooter() : null}</footer>

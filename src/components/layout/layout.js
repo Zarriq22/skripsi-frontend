@@ -1,6 +1,7 @@
 import { Component } from "react";
 import Dropdown from "../ui/Dropdown";
 import { withNavigate } from "../../router/custom/withNavigate";
+import { Link } from "react-router-dom";
 
 class Layout extends Component {
     constructor(props) {
@@ -27,19 +28,19 @@ class Layout extends Component {
                 <h2 className="text-xl font-bold mb-4">Sidebar</h2>
                 <ul className="space-y-2">
                     <li>
-                        <a href="/dashboard" className="hover:underline">
+                        <Link to="/admin-dashboard" className="hover:underline">
                         Dashboard
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="/profile" className="hover:underline">
+                        <Link to="/profile" className="hover:underline">
                         Profil
-                        </a>
+                        </Link>
                     </li>
                     <li>
-                        <a href="/chatbot" className="hover:underline">
+                        <Link to="/chatbot" className="hover:underline">
                         Chatbot
-                        </a>
+                        </Link>
                     </li>
                 </ul>
             </aside>
@@ -63,7 +64,11 @@ class Layout extends Component {
                 </header>
 
                 {/* Content */}
-                <main className="p-6 bg-gray-100 flex-1">{children}</main>
+                <main className="p-6 bg-gray-100 flex-1">
+                    <div className="layout-component">
+                        {children}
+                    </div>
+                </main>
             </div>
         </div>
         );
