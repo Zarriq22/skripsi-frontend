@@ -5,6 +5,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/adminDashboard";
 import UserDashboard from "./pages/userDashboard";
 import NotFound from "./components/ui/NotFound";
+import DetailProduk from "./pages/componentProduk/produk/detail";
 
 function App() {
   return (
@@ -49,6 +50,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+      <Route
+        path="/detail-product/:id"
+        element={
+          <ProtectedRoute role="user">
+              <DetailProduk />
+          </ProtectedRoute>
+        }
+      />
 
       </Routes>
     </Router>

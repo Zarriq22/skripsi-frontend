@@ -1,44 +1,53 @@
 /* src/index.css */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
 }
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
 input:-webkit-autofill:active{
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: black;
-    background-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: black;
+  background-color: transparent;
 }
 
 .w-100 {
-    width: 100%;
+  width: 100%;
 }
 
 .h-100 {
-    height: 100%;
+  height: 100%;
+}
+
+.layout-component {
+  background-color: white;
+  border-radius: 24px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 24px 24px 0px 24px;
+  height: calc(100vh - 135px);
+  overflow-y: auto;
 }
 
 .container-fluid {
-    width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .row {
-    display: flex;
-    flex-wrap: wrap;
-    margin-right: -9px;
-    margin-left: -9px;
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -9px;
+  margin-left: -9px;
 }
 
 .col-md-1 {
-    flex: 0 0 8.33333%;
-    max-width: 8.33333%;
+  flex: 0 0 8.33333%;
+  max-width: 8.33333%;
 }
 
 .col-md-2 {
@@ -247,6 +256,30 @@ input:-webkit-autofill:active{
   padding-bottom: 10px;
 }
 
+input[disabled] {
+  padding: 5px 10px;
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+  background: transparent;
+  color: black;
+  font-size: 12px;
+  width: 100%;
+  height: 36px;
+  cursor: not-allowed;
+}
+
+select[disabled] {
+  padding: 5px 10px;
+  border: 1px dashed #ccc;
+  border-radius: 5px;
+  background: transparent;
+  color: black;
+  font-size: 12px;
+  width: 100%;
+  height: 36px;
+  cursor: not-allowed;
+}
+
 .form-control {
   display: flex;
   flex-direction: row;
@@ -318,4 +351,223 @@ input:-webkit-autofill:active{
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table thead th {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 2;
+  border-bottom: 1px solid #ccc;
+}
+
+.table tr {
+  border-bottom: 1px solid #ccc;
+}
+
+.table th,
+.table td {
+  padding: 10px;
+  text-align: left;
+}
+
+.table .table-th {
+  background-color: #d1edfa;
+  font-weight: bold;
+}
+
+.table tbody tr:hover {
+  background-color: #e4e3e3;
+}
+
+.table .btn {
+  margin-right: 5px;
+}
+
+.scroll-view {
+  /* max-height: calc(30vh - 60px); */
+  overflow-y: hidden; /* awalnya hidden */
+  padding: 0px 16px 16px 0px;
+  transition: all 0.3s ease;
+
+  /* Untuk Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+
+.scroll-view:hover {
+  overflow-y: auto; /* muncul pas hover */
+}
+
+.scroll-view::-webkit-scrollbar {
+  width: 6px; /* lebar scrollbar */
+}
+
+.scroll-view::-webkit-scrollbar-track {
+  background: #f1f1f1;  /* warna latar belakang track */
+  border-radius: 4px;
+}
+
+.scroll-view::-webkit-scrollbar-thumb {
+  background-color: #888;  /* warna thumb (bagian yang bisa digeser) */
+  border-radius: 4px;
+  border: 2px solid transparent; /* biar keliatan agak lebih tipis */
+  background-clip: content-box;
+}
+
+.scroll-view::-webkit-scrollbar-thumb:hover {
+  background: #555; /* warna saat hover */
+}
+
+.bg-button-add {
+  background-color: #d1edfa;
+  color: #034c99;
+  border-radius: 8px;
+}
+
+.bg-button-delete {
+  background-color: #fce0d1;
+  color: #b31522;
+  border-radius: 8px;
+}
+
+.bg-button-upload {
+  background-color: #fff8e5;
+  color: #cf8000;
+  border-radius: 8px;
+}
+
+.bg-button-export {
+  background-color: #efffdb;
+  color: #4a942e;
+  border-radius: 8px;
+}
+
+.bg-button-popup-save {
+  background-color: #0562b2;
+  color: white;
+  border-radius: 8px;
+}
+
+.bg-button-popup-close {
+  background-color: white;
+  border: 1px solid #0562b2;
+  color: #0562b2;
+  border-radius: 8px;
+}
+
+/* Confirm Alert Styles */
+.confirm-alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.confirm-alert-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 20px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-alert-title {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.confirm-alert-message {
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.confirm-alert-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirm-alert-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.confirm-alert-button.primary {
+  background-color: #f44336;
+  color: white;
+}
+
+.confirm-alert-button.secondary {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+/* Styling Card */
+.card {
+  width: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  margin: 20px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.3s ease
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.card-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-content {
+  color: #666;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #333;
 }

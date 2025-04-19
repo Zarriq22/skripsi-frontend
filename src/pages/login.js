@@ -1,8 +1,8 @@
-import axios from 'axios';
+import { Component } from 'react';
 import { Link } from 'react-router-dom';
 import Form from '../components/ui/Form';
-import { Component } from 'react';
 import { withNavigate } from '../router/custom/withNavigate';
+import httpRequest from '../plugin/httpRequest';
 
 class Login extends Component {
   constructor (props) {
@@ -31,14 +31,18 @@ class Login extends Component {
   handleSubmit = async (formData) => {
     if (formData) {
       try {
-        const res = await axios.post('http://localhost:5000/api/auth/login', formData);
-        localStorage.setItem('userData', JSON.stringify(res.data))
+        const res = await httpRequest(process.env.REACT_APP_BASE_URL, 'auth/login', 'POST', {
+          values: formData
+        });
 
-        if (res.data) {
-          const role = res.data.user.role;
+        localStorage.setItem('userData', JSON.stringify(res));
+
+        if (res) {
+          const role = res.user.role;
           this.props.navigate(role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
         }
       } catch (err) {
+        console.log(err)
         console.error("Full Error Object:", err); // <== Tambahan ini bro
         alert('Login gagal: ' + err.response?.data?.message || 'Error');
       }
@@ -57,7 +61,7 @@ class Login extends Component {
     return (
       <div className="w-screen h-screen bg-gradient-to-r from-cyan-500 to-blue-500">
         <div className='container mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex justify-center items-center'>
-          <div className='w-[30%] p-4 border-2 rounded-2xl'>
+          <div className='w-[30%] p-4 border-2 rounded-2xl bg-white'>
             <h2 className='main-title text-center'>Welcome to ZarShop!</h2>
             <Form
               dataField={this.loginFields}
