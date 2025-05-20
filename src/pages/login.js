@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Form from '../components/ui/Form';
 import { withNavigate } from '../router/custom/withNavigate';
 import httpRequest from '../plugin/httpRequest';
+import alert from '../components/ui/Alert';
 
 class Login extends Component {
   constructor (props) {
@@ -13,7 +14,6 @@ class Login extends Component {
         name: 'username',
         label: 'Username',
         type: 'text',
-        required: true,
         placeholder: 'Masukkan username',
         className: 'form-input' 
       },
@@ -21,9 +21,13 @@ class Login extends Component {
         name: 'password',
         label: 'Password',
         type: 'password',
-        required: true,
         placeholder: 'Masukkan password',
-        className: 'form-input'
+        className: 'form-input',
+      },
+      {
+        name: 'resetPassword',
+        type: 'resetPassword',
+        forgotPassword: true
       }
     ];
   }
@@ -39,12 +43,11 @@ class Login extends Component {
 
         if (res) {
           const role = res.user.role;
-          this.props.navigate(role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
+          window.location.href = (role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
         }
       } catch (err) {
-        console.log(err)
         console.error("Full Error Object:", err); // <== Tambahan ini bro
-        alert('Login gagal: ' + err.response?.data?.message || 'Error');
+        alert(`Login gagal: ${err.response?.data?.message || 'Error'}`, 'Informasi');
       }
     }
   };
@@ -61,12 +64,11 @@ class Login extends Component {
     return (
       <div className="w-screen h-screen bg-gradient-to-r from-cyan-500 to-blue-500">
         <div className='container mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex justify-center items-center'>
-          <div className='w-[30%] p-4 border-2 rounded-2xl bg-white'>
-            <h2 className='main-title text-center'>Welcome to ZarShop!</h2>
+          <div className='lg:w-[30%] p-4 border-2 rounded-2xl bg-white'>
+            <h2 className='main-title text-center'>Welcome to Zarrion<i className="text-cyan-500">F</i></h2>
             <Form
               dataField={this.loginFields}
               onSubmit={this.handleSubmit}
-              // formTitle="Welcome to ZarShop!"
               submitButtonText="Login"
               renderFooter={this.renderFooter}
             />

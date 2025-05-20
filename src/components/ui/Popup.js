@@ -25,9 +25,8 @@ class Popup extends Component {
         return (
             <div className="popup-overlay">
                 <div
-                    className="popup"
+                    className={`popup ${width} ${height}`}
                     ref={this.popupRef}
-                    style={{ height: height ? height : 'auto', width: width ? width : 'auto' }}
                     onMouseDown={this.startDrag}
                 >
                     <div className='popup-content'>

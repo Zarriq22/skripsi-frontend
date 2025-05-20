@@ -43,6 +43,7 @@ class ModalUser extends Component {
                 type: 'select',
                 className: 'form-input',
                 dataSource: 'userTypes',
+                readOnly: true
             },
             {
                 name: 'avatar',
@@ -144,7 +145,7 @@ class ModalUser extends Component {
                 onHiding={this.hideModal}
                 title={`Form ${this.props.type === 'detail' ? 'Detail User' : 'Tambah Admin'}`}
                 height={'50vh'}
-                width={'30vw'}
+                width={'w-[85%] md:w-[30vw]'}
                 toolbarItems={this.toolbarItems}
             >
                 <div>

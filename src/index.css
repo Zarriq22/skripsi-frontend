@@ -4,6 +4,44 @@ body {
   background-color: #f4f4f4;
 }
 
+.first-section {
+  position: sticky;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.humburger {
+  position: relative;
+}
+
+.humburger-menu {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  z-index: 2;
+}
+
+.acount {
+  position: relative;
+}
+
+.acount-menu {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  z-index: 2;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
 input:-webkit-autofill:focus, 
@@ -11,6 +49,11 @@ input:-webkit-autofill:active{
   -webkit-background-clip: text;
   -webkit-text-fill-color: black;
   background-color: transparent;
+}
+
+input::placeholder {
+  color: gray;
+  font-size: 12px;
 }
 
 .w-100 {
@@ -286,6 +329,7 @@ select[disabled] {
   justify-content: flex-start;
   align-items: center;
   gap: 12px;
+  margin-bottom: 2%;
 }
 
 .form-input {
@@ -297,6 +341,27 @@ select[disabled] {
   font-size: 12px;
   width: 100%;
   height: 36px;
+}
+
+/* Gaya saat input mendapatkan fokus (digerakkan kursor atau ditekan) */
+input:active, 
+input:focus {
+  outline: 1px solid blue;
+}
+
+.invalid-feedback {
+  position: absolute;
+  right: 0;
+  font-size: smaller;
+  color: red;
+}
+
+.form-input.is-invalid {
+  border-color: red;
+}
+
+.form-input.is-invalid:focus {
+  outline: 0px;
 }
 
 .avatar {
@@ -474,71 +539,62 @@ table thead th {
 }
 
 /* Confirm Alert Styles */
-.confirm-alert-overlay {
+.confirm-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
 }
 
-.confirm-alert-container {
-  background-color: white;
+.confirm-box {
+  background: white;
+  padding: 24px;
   border-radius: 8px;
-  padding: 20px;
-  width: 400px;
-  max-width: 90%;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  text-align: center;
 }
 
-.confirm-alert-title {
-  margin-top: 0;
-  margin-bottom: 15px;
-  font-size: 1.2rem;
-  color: #333;
+.confirm-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 12px;
 }
 
-.confirm-alert-message {
+.confirm-message {
   margin-bottom: 20px;
-  color: #666;
 }
 
-.confirm-alert-buttons {
+.confirm-buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 10px;
 }
 
-.confirm-alert-button {
+.confirm-btn {
   padding: 8px 16px;
   border: none;
+  background: #007bff;
+  color: white;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
 }
 
-.confirm-alert-button.primary {
-  background-color: #f44336;
-  color: white;
-}
-
-.confirm-alert-button.secondary {
-  background-color: #e0e0e0;
-  color: #333;
+.confirm-btn:hover {
+  background: #0056b3;
 }
 
 /* Styling Card */
 .card {
-  width: 200px;
+  height: 100%;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-  margin: 20px;
   padding: 12px;
   display: flex;
   flex-direction: column;
@@ -570,4 +626,139 @@ table thead th {
   font-size: 1.3rem;
   margin-bottom: 10px;
   color: #333;
+}
+
+/* styling cart */
+.cart {
+  padding: 12px;
+  border-radius: 12px;
+  width: 100%;
+  height: 100%;
+}
+
+.cart-item {
+  position: relative;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 12px;
+  background: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1)
+}
+
+.cart-image {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #d4d4d4;
+  padding-bottom: 8px;
+  margin-bottom: 12px
+}
+
+.cart-content {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start
+}
+
+.cart-details {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shop-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #f53d2d
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.product-variant {
+  font-size: 12px;
+  color: #555;
+}
+
+.new-price {
+  color: #f53d2d;
+  font-weight: bold
+}
+
+.total-price {
+  font-weight: bold;
+  color: #333
+}
+
+.qty-input {
+  padding: 0px 16px 0px 16px;
+  text-align: center;
+  border: none;
+}
+
+.qty-btn {
+  background: #eee;
+  padding: 4px 10px;
+  border: none;
+  cursor: pointer
+}
+
+.line {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+li.active {
+  background: #f53d2d;
+  color: #fff;
+}
+
+.badge-number {
+  background: rgb(93, 236, 255);
+  color: #0A0A0A;
+  padding: 8px 16px;
+  border-radius: 50%;
+  font-weight: bold;
+}
+
+.how-order {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100px;
+}
+
+.dashed-line {
+  border-left: 1px dashed rgb(0, 0, 0);
+  position: absolute;
+  top: 70%;
+  left: 33.5%;
+  height: 100%;
+  width: 0;
+}
+
+.chat-container {
+  height: calc(100vh - 370px);
+}
+
+@media screen and (min-width: 980px) {
+  .chat-container {
+    height: calc(100vh - 340px);
+  }
 }

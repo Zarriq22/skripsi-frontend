@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Layout from "../components/layout/layout";
 import httpRequest from "../plugin/httpRequest";
 import DataProduk from "./dataProduk";
 import DataUser from "./dataUser";
@@ -12,8 +11,6 @@ class AdminDashboard extends Component {
             detail: {}
         }
 
-        this.content = ['Keluar']
-
         this.dataProductRef = React.createRef();
     }
 
@@ -24,7 +21,7 @@ class AdminDashboard extends Component {
     getUser = async () => {
         let userData = JSON.parse(localStorage.getItem('userData'))
         let getMe = await httpRequest(process.env.REACT_APP_BASE_URL, `users/${userData.user.id}`, 'GET')
-        if (userData && userData.user.role === 'admin') {
+        if (userData) {
             this.setState({
                 detail: {
                     name: getMe.initialName,
@@ -36,22 +33,12 @@ class AdminDashboard extends Component {
 
     render() {
         return (
-            <>
-                <Layout title="Admin Dashboard" showSidebar={true} detail={this.state.detail} content={this.content}>
-                    <div className="container-fluid">
-                        <div className="row">
-                            <div className="col-md-12" style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-                                <div className="col-md-6" style={{ paddingRight: '24px' }}>
-                                    <DataProduk />
-                                </div>
-                                <div className="col-md-6" style={{ paddingRight: '24px' }}>
-                                    <DataUser />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </Layout>
-            </>
+            <div className=" pb-4">
+                <div className="md:flex md:justify-between">
+                    <DataProduk />
+                    <DataUser />
+                </div>
+            </div>
         );
     }
 }

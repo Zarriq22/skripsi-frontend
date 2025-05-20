@@ -28,7 +28,7 @@ class Register extends Component {
       {
         name: 'confirmPassword',
         label: 'Confirm Password',
-        type: 'password',
+        type: 'confirmPassword',
         required: true,
         placeholder: 'Masukkan password',
         className: 'form-input'
@@ -63,7 +63,7 @@ class Register extends Component {
   renderFooter = () => {
     return (
       <div className='text-center mt-4'>
-        <p>Sudah punya akun? <Link to="/" className='text-blue-600'>Login</Link></p>
+        <p>Sudah punya akun? <Link to="/login" className='text-blue-600'>Login</Link></p>
       </div>
     )
   }
@@ -72,12 +72,11 @@ class Register extends Component {
     return (
       <div className="w-screen h-screen bg-gradient-to-r from-cyan-500 to-blue-500">
         <div className='container mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex justify-center items-center'>
-          <div className='w-[30%] p-4 border-2 rounded-2xl bg-white'>
-            <h2 className='main-title text-center'>Welcome to ZarShop!</h2>
+          <div className='lg:w-[35%] p-4 border-2 rounded-2xl bg-white'>
+            <h2 className='main-title text-center'>Welcome to Zarrion<i className="text-cyan-500">F</i></h2>
             <Form
               dataField={this.registerFields}
               onSubmit={this.handleSubmit}
-              // formTitle="Welcome to ZarShop!"
               submitButtonText="Daftar"
               renderFooter={this.renderFooter}
             />
