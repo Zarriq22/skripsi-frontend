@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { formatNumber } from "../../plugin/helper";
 
 class DataTable extends Component {
     constructor(props) {
@@ -15,7 +16,7 @@ class DataTable extends Component {
                 x: 0,
                 y: 0,
                 selectedRow: null
-            }
+            },
         };
 
         this.contextMenuRef = React.createRef();
@@ -107,6 +108,13 @@ class DataTable extends Component {
         });
     };
 
+    handleRowsPerPageChange = (value) => {
+        this.setState({
+            rowsPerPage: value,
+            currentPage: 1  // Reset to first page when changing rows per page
+        });
+    };
+
     refreshData = () => {
         this.setState({ loading: true });
         setTimeout(() => {
@@ -130,7 +138,7 @@ class DataTable extends Component {
             <div className="table-responsive">
                 <div style={{ overflow: 'auto', height: height ? height : 'auto' }}>
                     <table className="table">
-                        <thead>
+                        <thead style={{ position: 'sticky', top: 0 }}>
                             <tr>
                                 {columns.map((col, idx) => (
                                     <th key={idx} className="table-th">
@@ -146,13 +154,13 @@ class DataTable extends Component {
                                     </th>
                                 ))}
                             </tr>
-                            <tr>
+                            <tr style={{ backgroundColor: 'lightblue' }}>
                                 {columns.map((col, idx) => (
                                     <th key={idx}>
                                         {col.field && (
                                             <div className="relative">
                                                 <span className="absolute top-1/2 left-2 transform -translate-y-1/2">
-                                                    <i className="fa fa-search"></i>
+                                                    <i className="fa fa-search" style={{ fontSize: '12px', color: 'gray' }}    ></i>
                                                 </span>
                                                 <input
                                                     type="text"
@@ -161,7 +169,7 @@ class DataTable extends Component {
                                                     onChange={(e) =>
                                                         this.handleColumnFilterChange(col.field, e.target.value)
                                                     }
-                                                    className="w-full pl-4 pr-2 py-1 border rounded"
+                                                    className="w-full pl-4 pr-2 py-1 border rounded form-input"
                                                 />
                                             </div>
                                         )}
@@ -184,7 +192,8 @@ class DataTable extends Component {
                                     >
                                         {columns.map((col, colIndex) => {
                                             const rawValue = row[col.field];
-                                            const displayValue = col.lookup ? col.lookup[rawValue] || rawValue : rawValue;
+                                            const type = col.type;
+                                            const displayValue = type === 'number' ? (rawValue ? formatNumber(rawValue) : rawValue) : col.lookup ? col.lookup[rawValue] || rawValue : rawValue;
 
                                             return (
                                                 <td key={colIndex}>
@@ -233,42 +242,40 @@ class DataTable extends Component {
                                 ))}
                             </div>
                         )}
-                        {/* {(this.props.onToolbarPreparing || [
-                            {
-                                label: "Ubah",
-                                action: onContextEdit,
-                                className: "hover:bg-gray-100"
-                            },
-                            {
-                                label: "Hapus",
-                                action: onContextDelete,
-                                className: "hover:bg-gray-100 text-red-500"
-                            }
-                        ]).map((item, idx) => (
-                            <button
-                                key={idx}
-                                className={`w-full text-left px-4 py-2 ${item.className || ""}`}
-                                onClick={() => {
-                                    item.action?.(contextMenu.selectedRow);
-                                    this.closeContextMenu();
-                                }}
-                            >
-                                {item.label}
-                            </button>
-                        ))} */}
                     </div>
                 )}
 
-                <div className="pagination flex gap-2 mt-2">
-                    {Array.from({ length: totalPages }, (_, i) => (
-                        <button
-                            key={i}
-                            className={`px-3 py-1 border rounded ${currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-gray-100"}`}
-                            onClick={() => this.handlePageChange(i + 1)}
-                        >
-                            {i + 1}
-                        </button>
-                    ))}
+                <div className="flex justify-between items-center">
+                    <div className="flex items-center" style={{ gap: '12px' }}>
+                        <div>
+                            <span>Page:</span>
+                            <span>{currentPage}</span>
+                            <span> of </span>
+                            <span>{sortedData.length}</span>
+                        </div>
+                        <div>
+                            <select
+                                value={rowsPerPage}
+                                onChange={(e) => this.handleRowsPerPageChange(parseInt(e.target.value, 10))}
+                                className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none"
+                            >
+                                <option value={5}>5</option>
+                                <option value={10}>10</option>
+                                <option value={20}>20</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="pagination flex gap-2">
+                        {Array.from({ length: totalPages }, (_, i) => (
+                            <button
+                                key={i}
+                                className={`px-3 py-1 border rounded ${currentPage === i + 1 ? "bg-blue-500 border-blue-500 text-white" : "bg-gray-100"}`}
+                                onClick={() => this.handlePageChange(i + 1)}
+                            >
+                                {i + 1}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
         );

@@ -68,7 +68,9 @@ class DataProduk extends Component {
     };
 
     showModalTambah = () => {
-        this.showModalAddRef.current.showModal();
+        this.showModalAddRef.current.showModal({
+            userType: 1
+        });
     };
 
     handleDetail = (user) => {
@@ -83,41 +85,37 @@ class DataProduk extends Component {
         const { dataUser } = this.state;
 
         return (
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-md-12">
-                        <h2 className="main-title">Data User</h2>
-                        <div className="flex justify-end mb-2">
-                            <Button 
-                                text="Tambah Admin" 
-                                onClick={this.showModalTambah}
-                                cssClass="bg-button-add"
-                            />
-                        </div>
-                        <div className="table-responsive">
-                            <DataTable
-                                ref={this.dataTableRef}
-                                columns={this.columns}
-                                data={dataUser}
-                                height={'calc(100vh - 340px)'}
-                                menuRightClick={true}
-                                onToolbarPreparing={this.onToolbarPreparing}
-                            />
-                        </div>
-
-                        <ModalUser 
-                            ref={this.showModalAddRef}
-                            refreshData={this.getAllData}
-                            type={'add'}
-                        />
-
-                        <ModalUser 
-                            ref={this.shoeModalDetailRef}
-                            refreshData={this.getAllData}
-                            type={'detail'}
-                        />
-                    </div>
+            <div className="container-fluid px-0">
+                <h2 className="main-title">Data User</h2>
+                <div className="flex justify-end mb-2">
+                    <Button 
+                        text="Tambah Admin" 
+                        onClick={this.showModalTambah}
+                        cssClass="bg-button-add"
+                    />
                 </div>
+                <div className="table-responsive">
+                    <DataTable
+                        ref={this.dataTableRef}
+                        columns={this.columns}
+                        data={dataUser}
+                        height={'calc(100vh - 320px)'}
+                        menuRightClick={true}
+                        onToolbarPreparing={this.onToolbarPreparing}
+                    />
+                </div>
+
+                <ModalUser 
+                    ref={this.showModalAddRef}
+                    refreshData={this.getAllData}
+                    type={'add'}
+                />
+
+                <ModalUser 
+                    ref={this.shoeModalDetailRef}
+                    refreshData={this.getAllData}
+                    type={'detail'}
+                />
             </div>
         );
     }

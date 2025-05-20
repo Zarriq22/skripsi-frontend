@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { Link } from "react-router-dom";
 
 class Form extends Component {
     constructor(props) {
@@ -15,6 +16,8 @@ class Form extends Component {
         this.state = {
             formData: {},
             errors: {},
+            hidden: false,
+            newHidden: false
         };
         
         this.handleChange = this.handleChange.bind(this);
@@ -24,6 +27,10 @@ class Form extends Component {
     validatePassword = (password) => {
         const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         return PASSWORD_REGEX.test(password);
+    }
+
+    handleForgotPasswordClick = () => {
+        console.log('test')
     }
     
     handleChange = (e) => {
@@ -121,12 +128,14 @@ class Form extends Component {
     }
 
     togglePasswordVisibility = (fieldName) => {
-        const passwordInput = document.getElementById(fieldName);
-    
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-        } else {
-            passwordInput.type = 'password';
+        if (fieldName === 'password') {
+            this.setState({
+                hidden: !this.state.hidden
+            })
+        } else if (fieldName === 'confirmPassword') {
+            this.setState({
+                newHidden: !this.state.newHidden
+            })
         }
     }
 
@@ -144,7 +153,8 @@ class Form extends Component {
     };
     
     renderField = (field) => {
-        const { formData, errors } = this.state;
+        const isRequired = field.required === true;
+        const { formData, errors, hidden, newHidden } = this.state;
         const value = formData[field.name] || '';
         const error = errors[field.name] || null;
 
@@ -182,8 +192,9 @@ class Form extends Component {
                         <div className="container-fluid">
                             <div className="row" style={fieldStyle}>
                                 <div className="col-md-12 form-control">
-                                    <div className="col-md-4">
+                                    <div className="col-md-4" style={{ display: 'flex', alignItems: 'flex-start' }}>
                                         <label htmlFor={field.name}>{field.label}</label>
+                                        {isRequired && <i className="fa fa-asterisk" aria-hidden="true" style={{ color: 'red', fontSize: '8px', marginLeft: '5px', marginTop: '3px' }}></i>}
                                     </div>
                                     <div className="col-md-8">
                                         <select
@@ -216,8 +227,9 @@ class Form extends Component {
                         <div className="container-fluid">
                             <div className="row" style={fieldStyle}>
                                 <div className="col-md-12 form-control" style={{ alignItems: 'flex-start' }}>
-                                    <div className="col-md-4">
+                                    <div className="col-md-4" style={{ display: 'flex', alignItems: 'flex-start' }}>
                                         <label htmlFor={field.name}>{field.label}</label>
+                                        {isRequired && <i className="fa fa-asterisk" aria-hidden="true" style={{ color: 'red', fontSize: '8px', marginLeft: '5px', marginTop: '3px' }}></i>}
                                     </div>
                                     <div className="col-md-8">
                                         <textarea
@@ -249,10 +261,11 @@ class Form extends Component {
                         <div className="container-fluid">
                             <div className="row" style={fieldStyle}>
                                 <div className="col-md-12 form-control">
-                                    <div className="col-md-4">
+                                    <div className="col-md-4" style={{ display: 'flex', alignItems: 'flex-start' }}>
                                         <label className="form-check-label" htmlFor={field.name}>
                                             {field.label}
                                         </label>
+                                        {isRequired && <i className="fa fa-asterisk" aria-hidden="true" style={{ color: 'red', fontSize: '8px', marginLeft: '5px', marginTop: '3px' }}></i>}
                                     </div>
                                     <div className="col-md-8">
                                         <input
@@ -284,12 +297,13 @@ class Form extends Component {
                         <div className="container-fluid">
                             <div className="row" style={fieldStyle}>
                                 <div className="col-md-12 form-control">
-                                    <div className="col-md-4">
+                                    <div className="col-md-4" style={{ display: 'flex', alignItems: 'flex-start' }}>
                                         <label htmlFor={field.name}>{field.label}</label>
+                                        {isRequired && <i className="fa fa-asterisk" aria-hidden="true" style={{ color: 'red', fontSize: '8px', marginLeft: '5px', marginTop: '3px' }}></i>}
                                     </div>
                                     <div className="relative col-md-8">
                                         <input
-                                            type="password" // Perubahan di sini
+                                            type={hidden ? 'text' : 'password'} // Perubahan di sini
                                             id={field.name}
                                             name={field.name}
                                             value={value}
@@ -298,8 +312,55 @@ class Form extends Component {
                                             className={`form-input ${error ? 'is-invalid' : ''} ${field.className || ''}`} // Support custom class
                                             disabled={field.readOnly || this.props.readOnly}
                                         />
-                                        <i className={"fa fa-eye"} onClick={() => this.togglePasswordVisibility(field.name)} style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} aria-hidden="true"></i>
+                                        <i className={`${hidden ? 'far fa-eye-slash' : 'far fa-eye'
+                                        }`} onClick={() => this.togglePasswordVisibility(field.name)} style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} aria-hidden="true"></i>
                                         {error && <div className="invalid-feedback">{error}</div>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 'confirmPassword':
+                return (
+                    <div key={field.name} className="form-group">
+                        <div className="container-fluid">
+                            <div className="row" style={fieldStyle}>
+                                <div className="col-md-12 form-control">
+                                    <div className="col-md-4" style={{ display: 'flex', alignItems: 'flex-start' }}>
+                                        <label htmlFor={field.name}>{field.label}</label>
+                                        {isRequired && <i className="fa fa-asterisk" aria-hidden="true" style={{ color: 'red', fontSize: '8px', marginLeft: '5px', marginTop: '3px' }}></i>}
+                                    </div>
+                                    <div className="relative col-md-8">
+                                        <input
+                                            type={newHidden ? 'text' : 'password'} // Perubahan di sini
+                                            id={field.name}
+                                            name={field.name}
+                                            value={value}
+                                            onChange={this.handleChange}
+                                            placeholder={'Masukan Password Konfirmasi'}
+                                            className={`form-input ${error ? 'is-invalid' : ''} ${field.className || ''}`} // Support custom class
+                                            disabled={field.readOnly || this.props.readOnly}
+                                        />
+                                        <i className={`${newHidden ? 'far fa-eye-slash' : 'far fa-eye'
+                                        }`} onClick={() => this.togglePasswordVisibility(field.name)} style={{ position: 'absolute', right: '5%', top: '50%', transform: 'translateY(-50%)', cursor: 'pointer' }} aria-hidden="true"></i>
+                                        {error && <div className="invalid-feedback">{error}</div>}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+
+            case 'resetPassword':
+                return (
+                    <div key={field.name} className="form-group">
+                        <div className="container-fluid">
+                            <div className="row" style={fieldStyle}>
+                                <div className="col-md-12 form-control" style={{ justifyContent: 'end' }}>
+                                    <div className="text-blue-500 text-sm">
+                                        {field.forgotPassword && <Link to="/reset-password">Lupa Password?</Link>}  
                                     </div>
                                 </div>
                             </div>
@@ -313,8 +374,9 @@ class Form extends Component {
                         <div className="container-fluid">
                             <div className="row" style={fieldStyle}>
                                 <div className="col-md-12 form-control">
-                                    <div className="col-md-4">
+                                    <div className="col-md-4" style={{ display: 'flex', alignItems: 'flex-start' }}>
                                         <label htmlFor={field.name}>{field.label}</label>
+                                        {isRequired && <i className="fa fa-asterisk" aria-hidden="true" style={{ color: 'red', fontSize: '8px', marginLeft: '5px', marginTop: '3px' }}></i>}
                                     </div>
                                     <div className="col-md-8">
                                         <input
@@ -357,8 +419,9 @@ class Form extends Component {
                         <div className="container-fluid">
                             <div className="row" style={fieldStyle}>
                                 <div className="col-md-12 form-control">
-                                    <div className="col-md-4">
+                                    <div className="col-md-4" style={{ display: 'flex', alignItems: 'flex-start' }}>
                                         <label htmlFor={field.name}>{field.label}</label>
+                                        {isRequired && <i className="fa fa-asterisk" aria-hidden="true" style={{ color: 'red', fontSize: '8px', marginLeft: '5px', marginTop: '3px' }}></i>}
                                     </div>
                                     <div className="col-md-8">
                                         <input

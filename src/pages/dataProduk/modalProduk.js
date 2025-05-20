@@ -3,6 +3,7 @@ import Popup from "../../components/ui/Popup";
 import Form from "../../components/ui/Form";
 import ScrollView from "../../components/ui/Scroll";
 import httpRequest from "../../plugin/httpRequest";
+import { category } from "../../plugin/lookup";
 
 class ModalProduk extends Component {
     constructor(props) {
@@ -23,6 +24,15 @@ class ModalProduk extends Component {
                 required: true,
                 placeholder: 'Masukkan Nama Produk',
                 className: 'form-input'
+            },
+            {
+                name: 'kategori',
+                label: 'Kategori Produk',
+                required: true,
+                placeholder: 'Masukkan Kategori Produk',
+                type: 'select',
+                className: 'form-input',
+                dataSource: 'kategori',
             },
             {
                 name: 'price',
@@ -85,7 +95,8 @@ class ModalProduk extends Component {
 
     hideModal = () => {
         this.setState({ 
-            popupVisible: false 
+            popupVisible: false,
+            formData: {}
         });
     }
     
@@ -96,8 +107,8 @@ class ModalProduk extends Component {
     };
 
     onSubmit = async () => {
-        let data = this.formRef.current.state.formData 
-        if (data.id) {
+        let data = this.formRef.current.state.formData
+        if (data._id) {
             try {
                 let result = await httpRequest(process.env.REACT_APP_BASE_URL, 'products', 'PUT', {
                     values: data,
@@ -134,6 +145,9 @@ class ModalProduk extends Component {
                 dataField={this.dataField}
                 onSubmit={this.onSubmit}
                 formTitle={this.props.formTitle}
+                dataSource={{ 
+                    kategori: category() // Tambahkan dataSource dengan nama yang sesuai
+                }}
             />
         )
     }
@@ -146,7 +160,7 @@ class ModalProduk extends Component {
                 onHiding={this.hideModal}
                 title={`Form ${this.props.type === 'edit' ? 'Edit' : 'Tambah'} Produk`}
                 height={'50vh'}
-                width={'30vw'}
+                width={'w-[85%] md:w-[30vw]'}
                 toolbarItems={this.toolbarItems}
             >
                 <div>

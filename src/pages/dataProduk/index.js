@@ -3,6 +3,8 @@ import Button from "../../components/ui/Button";
 import httpRequest from "../../plugin/httpRequest";
 import ModalProduk from "./modalProduk";
 import DataTable from "../../components/ui/DataTable";
+import confirmAlert from "../../components/ui/ConfirrmAlert";
+import notify from "../../components/ui/Notify";
 
 class DataProduk extends Component {
     constructor(props) {
@@ -25,11 +27,13 @@ class DataProduk extends Component {
             { 
                 header: "Harga", 
                 field: "price", 
+                type: 'number',
                 sortable: true 
             },
             { 
                 header: "Stok", 
                 field: "stock", 
+                type: 'number',
                 sortable: true 
             },
             { 
@@ -45,14 +49,31 @@ class DataProduk extends Component {
 
         this.onToolbarPreparing = [
             {
-              label: "Ubah",
-              action: this.handleEdit
+                label: "Ubah",
+                action: this.handleEdit
             },
             {
-              label: "Hapus",
-              action: this.handleDelete
+                label: "Hapus",
+                action: (data) => {
+                    confirmAlert({
+                        title: "Hapus Produk",
+                        message: "Apakah anda yakin ingin menghapus produk ini ?",
+                        buttons: [
+                            {
+                                label: "Ya",
+                                onClick: () => {
+                                    this.handleDelete(data);
+                                }
+                            },
+                            {
+                                label: "Tidak",
+                                onClick: () => {}
+                            }
+                        ]
+                    })
+                }
             }
-          ]
+        ]
     }
 
     componentDidMount() {
@@ -82,9 +103,11 @@ class DataProduk extends Component {
         try {
             await httpRequest(process.env.REACT_APP_BASE_URL, `products/${id}`, 'DELETE');
 
+            notify('Produk berhasil dihapus', 'success');
             this.getAllData()
         } catch (e) {
             console.log(e)
+            notify('Produk gagal dihapus', 'error');
         }
     };
     
@@ -100,41 +123,37 @@ class DataProduk extends Component {
         const { dataProduct } = this.state;
 
         return (
-            <div className="container-fluid">
-                <div className="row">
-                    <div className="col-md-12">
-                        <h2 className="main-title">Data Produk</h2>
-                        <div className="table-responsive">
-                            <div className="flex justify-end mb-2">
-                                <Button 
-                                    text="Tambah Produk" 
-                                    onClick={this.showModalTambah}
-                                    cssClass="bg-button-add"
-                                />
-                            </div>
-                            <DataTable
-                                ref={this.dataTableRef}
-                                columns={this.columns}
-                                data={dataProduct}
-                                height={'calc(100vh - 340px)'}
-                                menuRightClick={true}
-                                onToolbarPreparing={this.onToolbarPreparing}
-                            />
-                        </div>
-
-                        <ModalProduk 
-                            ref={this.showMoadlAddRef}
-                            refreshData={this.getAllData}
-                            type={'add'}
-                        />
-
-                        <ModalProduk 
-                            ref={this.showModalEditRef}
-                            refreshData={this.getAllData}
-                            type={'edit'}
+            <div className="container-fluid px-0">
+                <h2 className="main-title">Data Produk</h2>
+                <div className="table-responsive">
+                    <div className="flex justify-end mb-2">
+                        <Button 
+                            text="Tambah Produk" 
+                            onClick={this.showModalTambah}
+                            cssClass="bg-button-add"
                         />
                     </div>
+                    <DataTable
+                        ref={this.dataTableRef}
+                        columns={this.columns}
+                        data={dataProduct}
+                        height={'calc(100vh - 320px)'}
+                        menuRightClick={true}
+                        onToolbarPreparing={this.onToolbarPreparing}
+                    />
                 </div>
+
+                <ModalProduk 
+                    ref={this.showMoadlAddRef}
+                    refreshData={this.getAllData}
+                    type={'add'}
+                />
+
+                <ModalProduk 
+                    ref={this.showModalEditRef}
+                    refreshData={this.getAllData}
+                    type={'edit'}
+                />
             </div>
         );
     }
