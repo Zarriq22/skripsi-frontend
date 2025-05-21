@@ -51,6 +51,18 @@ const deleteRequest = async (baseUrl, url) => {
         throw e
     }
 };
+const deleteRequestBody = async (baseUrl, url, data) => {
+    try {
+        const response = await axios.delete(baseUrl + url, {
+            data,
+            withCredentials: true
+        });
+        return response.data;
+    } catch (e) {
+        console.error(e);
+        throw e
+    }
+};
 
 export function httpRequest(baseUrl, endpoint, method, options = {}, data = {}) {
     let url = endpoint;
@@ -74,6 +86,10 @@ export function httpRequest(baseUrl, endpoint, method, options = {}, data = {}) 
 
     if (method === 'DELETE') {
         return deleteRequest(baseUrl, url);
+    }
+
+    if (method === 'DELETEBODY') {
+        return deleteRequestBody(baseUrl, url, options.values);
     }
 
     console.warn('Method tidak dikenali:', method);

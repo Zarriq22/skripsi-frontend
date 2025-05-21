@@ -6,6 +6,8 @@ import RatingStars from "../../../components/ui/Rating";
 import { withNavigate } from "../../../router/custom/withNavigate";
 import { Link } from "react-router-dom";
 import { formatNumber } from "../../../plugin/helper";
+import Loading from "../../../components/ui/LoadingPanel";
+import LoadingRequest from "../../../components/ui/loading";
 
 
 class DetailProduk extends Component {
@@ -14,7 +16,9 @@ class DetailProduk extends Component {
         
         this.state = {
             product: {},
-            activeImage: ''
+            activeImage: '',
+            loading: true,
+            loadingRequest: false
         }
     }
 
@@ -29,17 +33,25 @@ class DetailProduk extends Component {
     }
 
     getAllData = async (id) => {
+        this.setState({ loading: true })
         let userData = JSON.parse(localStorage.getItem('userData'))
-        let getMe = await httpRequest(process.env.REACT_APP_BASE_URL, `users/${userData.user.id}`, 'GET')
-        let getProduct = await httpRequest(process.env.REACT_APP_BASE_URL, `products/${id}`, 'GET')
 
-        this.setState({
-            detailUser: {
-                userId: getMe._id
-            },
-            product: getProduct,
-            activeImage: getProduct.image?.[0] || ''
-        })
+        try {
+            let getMe = await httpRequest(process.env.REACT_APP_BASE_URL, `users/${userData.user.id}`, 'GET')
+            let getProduct = await httpRequest(process.env.REACT_APP_BASE_URL, `products/${id}`, 'GET')
+    
+            this.setState({
+                detailUser: {
+                    userId: getMe._id
+                },
+                product: getProduct,
+                activeImage: getProduct.image?.[0] || '',
+                loading: false
+            })
+        } catch (e) {
+            this.setState({ loading: false })
+            alert('Terjadi kesalahan saat mengambil data produk', 'Informasi')
+        }
     }
 
     handleThumbnailClick = (img) => {
@@ -49,6 +61,7 @@ class DetailProduk extends Component {
     }
 
     handleAddToCart = async() => {
+        this.setState({ loadingRequest: true })
         const { detailUser, product, activeImage } = this.state;
         const cartProduct = {
             userId: detailUser.userId,
@@ -70,10 +83,12 @@ class DetailProduk extends Component {
 
             if (response) {
                 alert('Produk berhasil ditambahkan ke keranjang belanja', 'Informasi');
+                this.setState({ loadingRequest: false })
             }
         } catch (e) {
             console.error(e);
             alert('Terjadi kesalahan saat menambahkan produk ke keranjang belanja', 'Informasi');
+            this.setState({ loadingRequest: false })
         }
     }
     
@@ -93,12 +108,16 @@ class DetailProduk extends Component {
     }
 
     render() {
-        const { product, activeImage  } = this.state
+        const { product, activeImage, loading, loadingRequest  } = this.state
         const userData = JSON.parse(localStorage.getItem('userData'));
+
+        if (loading) {
+            return <Loading />
+        }
         return (
-            <div className="container-fluid">
+            <div className="container-fluid relative">
                 <div className="row">
-                    <div className="mb-3">
+                    <div className="">
                         <Link to="/dashboard-product" className="cursor-pointer">
                             <i className="fas fa-arrow-left text-cyan-500 text-2xl"></i>
                         </Link>
@@ -140,7 +159,7 @@ class DetailProduk extends Component {
                         <div className="flex flex-col gap-3">
                             <div >
                                 <div className="flex flex-col gap-3">
-                                    <h2 className="font-bold text-3xl">Nike Air Max Dia SE</h2>
+                                    <h2 className="font-bold text-3xl">{product.productName}</h2>
                                     <h4 className="font-medium text-xl">Rp {formatNumber(product.price)}</h4>
                                     <div className="flex items-center gap-2">
                                         <RatingStars rating={product.rating || 0} />
@@ -187,6 +206,8 @@ class DetailProduk extends Component {
                         </div>
                     </div>
                 </div>
+
+                {loadingRequest && <LoadingRequest />}
             </div>
         );
     }

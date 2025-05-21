@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import httpRequest from "../plugin/httpRequest";
 import CardProduct from "../components/ui/Card";
-import ChatBotBox from "../components/chatbot/chatBotBox";
 import { Link } from "react-router-dom";
+import alert from "../components/ui/Alert";
+import Loading from "../components/ui/LoadingPanel";
 
 class UserDashboard extends Component {
     constructor(props) {
@@ -17,7 +18,8 @@ class UserDashboard extends Component {
             showChatbot: false,
             chatbotMessages: [],
             chatbotInput: '',
-            showLoadingChat: false
+            showLoadingChat: false,
+            loading: false
         }
 
         this.chatBotBoxRef = React.createRef();
@@ -28,21 +30,28 @@ class UserDashboard extends Component {
     }
 
     getAllData = async () => {
+        this.setState({ loading: true })
         let userData = JSON.parse(localStorage.getItem('userData'))
-        let getMe = await httpRequest(process.env.REACT_APP_BASE_URL, `users/${userData.user.id}`, 'GET')
-        let getAllProduct = await httpRequest(process.env.REACT_APP_BASE_URL, `products`, 'GET')
-        let getKeranjang = await httpRequest(process.env.REACT_APP_BASE_URL, `carts/user/${getMe._id}`, 'GET')
-
-        this.setState({
-            detailUser: {
-                name: getMe.initialName,
-                avatar: getMe.avatar,
-                id: getMe._id
-            },
-            allProduct: getAllProduct,
-            filteredProduct: getAllProduct,
-            allKeranjang: getKeranjang
-        })
+        try {
+            let getMe = await httpRequest(process.env.REACT_APP_BASE_URL, `users/${userData.user.id}`, 'GET')
+            let getAllProduct = await httpRequest(process.env.REACT_APP_BASE_URL, `products`, 'GET')
+            let getKeranjang = await httpRequest(process.env.REACT_APP_BASE_URL, `carts/user/${getMe._id}`, 'GET')
+    
+            this.setState({
+                detailUser: {
+                    name: getMe.initialName,
+                    avatar: getMe.avatar,
+                    id: getMe._id
+                },
+                allProduct: getAllProduct,
+                filteredProduct: getAllProduct,
+                allKeranjang: getKeranjang,
+                loading: false
+            })
+        } catch (e) {
+            this.setState({ loading: false })
+            alert('Gagal mendapatkan data', 'Informasi')
+        }
     }
 
     handleSearchChange = (e) => {
@@ -98,6 +107,10 @@ class UserDashboard extends Component {
 
     render() {
         const id = this.state.detailUser.id
+
+        if (this.state.loading) {
+            return <Loading />
+        }
         return (
             <>
                 <div className="container-fluid">
@@ -146,34 +159,6 @@ class UserDashboard extends Component {
                         </div>
                     </div>
                 </div>
-                <div style={{
-                    position: 'fixed',
-                    bottom: '30px',
-                    right: '30px',
-                    zIndex: 1000
-                }}>
-                    <button
-                        onClick={() => this.showChatbot()}
-                        style={{
-                            backgroundColor: '#007bff',
-                            borderRadius: '50%',
-                            width: '60px',
-                            height: '60px',
-                            color: 'white',
-                            border: 'none',
-                            fontSize: '24px',
-                            cursor: 'pointer',
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-                        }}
-                    >
-                        💬
-                    </button>
-                </div>
-
-                <ChatBotBox 
-                    ref={this.chatBotBoxRef}
-                    role="user"
-                />
             </>
         );
     }

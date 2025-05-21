@@ -5,8 +5,8 @@ import Button from "./Button"
 function CardProduct ({ image, price, productName, stock, id, wishList, wishListId, addToWishlist }) {
     return (
         <div className="card-product" style={{ position: 'relative'}}>
-            <Link to={`/detail-product/${id}`} className="btn btn-default p-0">
-                <div className="card">
+            <Link to={`/detail-product/${id}`} className="btn p-0">
+                <div className="card pt-4">
                     <div className="card-header">
                         <img 
                             src={image} 

@@ -2,6 +2,7 @@ import { Component } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Layout from "./layout";
 import httpRequest from "../../plugin/httpRequest";
+import LoadingRequest from "../ui/loading";
 
 // Bungkus MainLayout dengan HOC untuk dapatkan location
 function withRouter(ComponentClass) {
@@ -56,7 +57,7 @@ class MainLayout extends Component {
 
     if (isNoLayout) return <>{children}</>;
 
-    if (!userDetail) return <div className="p-4">Loading layout...</div>;
+    if (!userDetail) return <LoadingRequest />;
 
     const showSidebar = true;
     const showChatBot = role === "user";

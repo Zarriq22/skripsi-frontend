@@ -1,11 +1,13 @@
-const loadingPanel = (param) => {
+const LoadingRequest = () => {
     return (
-        <div className={`${param ? 'flex justify-center items-center' : 'hidden'}`}>
-            <div className="w-screen h-screen bg-gradient-to-r from-cyan-500 to-blue-500 z-50">
-                loading...
+        <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-gray-100 opacity-50">
+            <div className="">
+                <div className="text-center">
+                    <div className="loader mb-4"></div>
+                </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default loadingPanel
+export default LoadingRequest;
