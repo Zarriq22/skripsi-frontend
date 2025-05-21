@@ -43,7 +43,7 @@ class Login extends Component {
 
         if (res) {
           const role = res.user.role;
-          window.location.href = (role === 'admin' ? '/admin-dashboard' : '/user-dashboard');
+          window.location.href = (role === 'admin' ? '/admin-dashboard' : '/dashboard-product');
         }
       } catch (err) {
         console.error("Full Error Object:", err); // <== Tambahan ini bro

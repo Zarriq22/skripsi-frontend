@@ -754,7 +754,7 @@ li.active {
 }
 
 .chat-container {
-  height: calc(100vh - 370px);
+  height: calc(100vh - 380px);
 }
 
 @media screen and (min-width: 980px) {

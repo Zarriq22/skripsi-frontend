@@ -3,7 +3,9 @@ import axios from 'axios';
 // GET
 const getRequest = async (baseUrl, url) => {
     try {
-        const response = await axios.get(baseUrl + url);
+        const response = await axios.get(baseUrl + url, {
+            withCredentials: true
+        });
         return response.data;
     } catch (e) {
         console.error(e);
@@ -14,7 +16,9 @@ const getRequest = async (baseUrl, url) => {
 // POST
 const postRequest = async (baseUrl, url, data) => {
     try {
-        const response = await axios.post(baseUrl + url, data);
+        const response = await axios.post(baseUrl + url, data, {
+            withCredentials: true
+        });
         return response.data;
     } catch (e) {
         console.error(e);
@@ -25,7 +29,9 @@ const postRequest = async (baseUrl, url, data) => {
 // PUT
 const putRequest = async (baseUrl, url, data) => {
     try {
-        const response = await axios.put(baseUrl + url, data);
+        const response = await axios.put(baseUrl + url, data, {
+            withCredentials: true
+        });
         return response.data;
     } catch (e) {
         console.error(e);
@@ -36,7 +42,9 @@ const putRequest = async (baseUrl, url, data) => {
 // DELETE
 const deleteRequest = async (baseUrl, url) => {
     try {
-        const response = await axios.delete(baseUrl + url);
+        const response = await axios.delete(baseUrl + url, {
+            withCredentials: true
+        });
         return response.data;
     } catch (e) {
         console.error(e);
