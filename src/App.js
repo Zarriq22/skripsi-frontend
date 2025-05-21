@@ -13,6 +13,10 @@ import { Component } from "react";
 import MainLayout from "./components/layout/mainLayout";
 import Home from "./pages/home";
 import CustomerService from "./pages/customerService";
+import PesananSaya from "./pages/componentProduk/pesananSaya";
+import Checkout from "./pages/componentProduk/checkout";
+import ManageUser from "./pages/componentAdmin/manageUser";
+import StatusDelivery from "./pages/componentAdmin/delivery";
 
 
 class App extends Component {
@@ -52,9 +56,23 @@ class App extends Component {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/user-dashboard" element={
+              <Route path="/dashboard-product" element={
                   <ProtectedRoute role="user">
                     <UserDashboard />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="/manage-user" element={
+                  <ProtectedRoute role="admin">
+                    <ManageUser />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="/pesanan-list" element={
+                  <ProtectedRoute role="admin">
+                    <StatusDelivery />
                   </ProtectedRoute>
                 }
               />
@@ -80,9 +98,16 @@ class App extends Component {
                 }
               />
 
+              <Route path="/pesanan-saya/:userId" element={
+                  <ProtectedRoute role="user">
+                    <PesananSaya />
+                  </ProtectedRoute>
+                }
+              />
+
               <Route path="/checkout" element={
                   <ProtectedRoute role="user">
-                    <Keranjang />
+                    <Checkout />
                   </ProtectedRoute>
                 }
               />
@@ -93,6 +118,13 @@ class App extends Component {
                   </ProtectedRoute>
                 }
               />
+
+              {/* <Route path="/customer-service/:userId/:productId" element={
+                  <ProtectedRoute role="user">
+                    <CustomerService />
+                  </ProtectedRoute>
+                }
+              /> */}
             </Routes>
           </MainLayout>
         </Router>

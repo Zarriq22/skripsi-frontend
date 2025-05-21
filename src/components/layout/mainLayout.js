@@ -81,7 +81,19 @@ class MainLayout extends Component {
             icon: "fa fa-sign-out"
           },
         ];
-
+    const itemsSideBar = role === "user" 
+      ? [
+          { path: "/dashboard-product", label: "Beranda", key: "beranda" },
+          { path: `/product-favorite/${userDetail.id}`, label: "Produk Favorit", key: "product-favorite" },
+          { path: `/pesanan-saya/${userDetail.id}`, label: "Pesanan Saya", key: "pesanan-saya" },
+          { path: `/customer-service/${userDetail.id}`, label: "Customer Service", key: "customer-service" },
+        ] 
+      : [
+          { path: "/admin-dashboard", label: "Beranda", key: "beranda" },
+          { path: `/manage-user`, label: "Daftar User", key: "manage-user" },
+          { path: `/pesanan-list`, label: "Pengiriman", key: "pesanan-list" },
+        ];
+    
     return (
       <Layout
         title={<span>Zarrion<i className="text-cyan-500">F</i></span>}
@@ -90,6 +102,7 @@ class MainLayout extends Component {
         content={content}
         showChatBot={showChatBot}
         userId={userDetail.id}
+        itemsSideBar={itemsSideBar}
       >
         {children}
       </Layout>

@@ -2,6 +2,7 @@ import { Component } from "react";
 import httpRequest from "../../plugin/httpRequest";
 import loadingChat from '../../assets/gif/loading.gif'
 import Button from "../../components/ui/Button";
+import ReactMarkdown from "react-markdown";
 
 class CustomerService extends Component {
     constructor(props) {
@@ -19,12 +20,21 @@ class CustomerService extends Component {
                 "Apakah ada promo atau diskon saat ini?",
                 "Berapa lama pengiriman biasanya?"
             ],
-            chatHistory: []
+            chatHistory: [],
+            productId: '',
+            productData: null,
         }
     }
 
     componentDidMount() {
         this.getChatHistory();
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('productId');
+
+        if (productId) {
+            this.setState({ productId: productId });
+            this.getProductInfo(productId);
+        }
 
         const lastVisit = localStorage.getItem('lastChatbotVisit');
         const now = new Date().getTime();
@@ -41,6 +51,23 @@ class CustomerService extends Component {
             });
 
             localStorage.setItem('lastChatbotVisit', now);
+        }
+    }
+
+    getProductInfo = async (id) => {
+        try {
+            const res = await httpRequest(process.env.REACT_APP_BASE_URL, `products/${id}`, 'GET');
+            this.setState({ 
+                productData: res,
+                quickQuestions: [
+                    `Apakah produk ${res.productName} tersedia?`,
+                    `Berapa harga ${res.productName}?`,
+                    `Ongkir untuk produk ini berapa ya?`,
+                    `Bisa minta deskripsi produk ${res.productName}?`
+                ]
+            });
+        } catch (error) {
+            console.error('Gagal ambil info produk:', error);
         }
     }
 
@@ -86,7 +113,8 @@ class CustomerService extends Component {
             const res = await(httpRequest(process.env.REACT_APP_BASE_URL, `chat`, 'POST', {
                 values: {
                     userId: userData.user.id,
-                    message: [{ role: 'user', content: newMessage }]
+                    message: [{ role: 'user', content: newMessage }],
+                    productId: this.state.productId
                 }
             }))
     
@@ -99,6 +127,11 @@ class CustomerService extends Component {
             this.scrollChatbot();
         } catch (err) {
             console.error(err);
+            const replay = { role: 'assistant', content: 'Maaf, DeepSeek sedang tidak bisa menerima pesan, coba lagi nanti.' };
+            this.setState({ 
+                chatbotMessages: [...updatedMessages, replay], 
+                showLoadingChat: false
+            });
         }
     }
 
@@ -136,6 +169,31 @@ class CustomerService extends Component {
                     </div>
                     <div>
                         <div className="chat-container px-[12px] pt-[12px]" style={{ overflowY: 'auto', background: '#f0f0f0', borderRadius: '8px', marginBottom: '12px' }}>
+                            {this.state.productData && (
+                                <div style={{
+                                    backgroundColor: '#fff',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    marginBottom: '12px',
+                                    display: 'flex',
+                                    gap: '12px',
+                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                }}>
+                                    <img src={this.state.productData.image} alt={this.state.productData.productName}
+                                        style={{ width: '80px', height: '80px', borderRadius: '6px', objectFit: 'cover' }}
+                                    />
+                                    <div>
+                                        <h2 style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '4px' }}>
+                                            {this.state.productData.productName}
+                                        </h2>
+                                        <p style={{ margin: '0 0 4px 0', fontSize: '14px' }}>{this.state.productData.description}</p>
+                                        <p style={{ margin: '0', color: 'green', fontWeight: 'bold' }}>
+                                            Rp {Number(this.state.productData.price).toLocaleString('id-ID')}
+                                        </p>
+                                        <p style={{ fontSize: '12px', color: '#555' }}>Stok: {this.state.productData.stock}</p>
+                                    </div>
+                                </div>
+                            )}
                             {this.state.chatbotMessages.map((msg, index) => (
                                 <div key={index} style={{
                                     textAlign: msg.role === 'user' ? 'right' : 'left',
@@ -149,7 +207,8 @@ class CustomerService extends Component {
                                         color: msg.role === 'user' ? '#fff' : '#000',
                                         maxWidth: '70%'
                                     }}>
-                                        {msg.content}
+                                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                        {/* {msg.content} */}
                                     </div>
                                 </div>
                             ))}
@@ -174,22 +233,26 @@ class CustomerService extends Component {
                         </div>
                     </div>
                     <div className="flex gap-2 overflow-x-auto w-full pb-2">
-                        {this.state.quickQuestions.map((item, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => this.setState({ chatbotInput: item }, () => this.sendChatbotMessage())}
-                                style={{
-                                    padding: '6px 10px',
-                                    backgroundColor: '#e0e0e0',
-                                    border: 'none',
-                                    borderRadius: '16px',
-                                    cursor: 'pointer',
-                                    fontSize: '12px'
-                                }}
-                            >
-                                {item}
-                            </button>
-                        ))}
+                        {this.state.quickQuestions && (
+                            <div className="flex gap-2 overflow-x-auto w-full pb-2">
+                                {this.state.quickQuestions.map((item, idx) => (
+                                    <button
+                                        key={`prod-${idx}`}
+                                        onClick={() => this.setState({ chatbotInput: item }, () => this.sendChatbotMessage())}
+                                        style={{
+                                            padding: '6px 10px',
+                                            backgroundColor: '#ffeeba',
+                                            border: 'none',
+                                            borderRadius: '16px',
+                                            cursor: 'pointer',
+                                            fontSize: '12px'
+                                        }}
+                                    >
+                                        {item}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div>
                         <div style={{ padding: '10px', borderTop: '1px solid #ccc', display: 'flex', width: '100%' }}>

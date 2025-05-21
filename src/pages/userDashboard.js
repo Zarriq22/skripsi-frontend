@@ -132,7 +132,7 @@ class UserDashboard extends Component {
                                 return (
                                     <CardProduct 
                                         key={index}
-                                        image={item.image[0]}
+                                        image={item.image}
                                         price={item.price}
                                         productName={item.productName}
                                         stock={item.stock}

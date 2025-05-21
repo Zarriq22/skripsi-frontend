@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import httpRequest from "../plugin/httpRequest";
 import DataProduk from "./dataProduk";
-import DataUser from "./dataUser";
 
 class AdminDashboard extends Component {
     constructor(props) {
@@ -33,11 +32,8 @@ class AdminDashboard extends Component {
 
     render() {
         return (
-            <div className=" pb-4">
-                <div className="md:flex md:justify-between">
-                    <DataProduk />
-                    <DataUser />
-                </div>
+            <div className="pb-4">
+                <DataProduk />
             </div>
         );
     }

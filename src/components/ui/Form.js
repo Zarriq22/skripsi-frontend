@@ -1,5 +1,6 @@
 import { Component } from "react";
 import { Link } from "react-router-dom";
+import { formatNumber } from "../../plugin/helper";
 
 class Form extends Component {
     constructor(props) {
@@ -27,10 +28,6 @@ class Form extends Component {
     validatePassword = (password) => {
         const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
         return PASSWORD_REGEX.test(password);
-    }
-
-    handleForgotPasswordClick = () => {
-        console.log('test')
     }
     
     handleChange = (e) => {
@@ -428,7 +425,7 @@ class Form extends Component {
                                             type={field.type || 'text'}
                                             id={field.name}
                                             name={field.name}
-                                            value={value}
+                                            value={typeof value === 'number' ? formatNumber(value) : value}
                                             onChange={this.handleChange}
                                             className={`form-input ${error ? 'is-invalid' : ''}`}
                                             placeholder={field.placeholder}

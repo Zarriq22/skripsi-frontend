@@ -4,7 +4,7 @@ import DataTable from "../../components/ui/DataTable";
 import ModalUser from "./modalUser";
 import Button from "../../components/ui/Button";
 
-class DataProduk extends Component {
+class DataUser extends Component {
     constructor(props) {
         super(props);
 
@@ -121,4 +121,4 @@ class DataProduk extends Component {
     }
 }
 
-export default DataProduk;
+export default DataUser;

@@ -21,6 +21,20 @@ export const category = () =>
         10: "Mukena",
         11: "Kerudung",
         12: "Peci",
+        13: "Cincin",
+        14: "Kacamata",
+        15: "Aksesoris"
+    }).map(([value, label]) => ({
+        value,
+        label
+}));
+
+export const statusPesanan = () =>
+    Object.entries({
+        1: "Sedang Dikemas",
+        2: "Sedang Dikirim",
+        3: "Pesanan Selesai",
+        4: "Pesanan Dibatalkan"
     }).map(([value, label]) => ({
         value,
         label
