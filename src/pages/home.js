@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import img from "../assets/avatar/logo.png"
+import img from "../assets/avatar/logoDesain.png"
 import hero from "../assets/avatar/hero.png"
 import Button from "../components/ui/Button";
 import { withNavigate } from "../router/custom/withNavigate";
@@ -216,20 +216,22 @@ class Home extends Component {
                             {/* Second Section */}
                             <div id="product" className="second-section px-[24px]">
                                 <div className="container mx-auto">
-                                    <div className="mt-10 flex flex-col gap-4">
-                                        <div>
+                                    <div className="mt-10 flex flex-col justify-between md:flex-row-reverse gap-4">
+                                        <div className="w-full md:w-1/2">
                                             <img src={hero} alt="hero" className="w-full" />
                                         </div>
-                                        <div className="flex flex-col gap-2">
-                                            <h1 className="text-3xl font-bold">Zarrion<i className="text-cyan-500">Fashion</i></h1>
-                                            <p className="">Zarrion<i className="text-cyan-500">Fashion</i> adalah toko online yang menyediakan berbagai macam produk fashion dengan harga murah dan kualitas terbaik. Ayo jelajahi dan temukan produk kesukaanmu di toko kami sekarang!</p>
-                                        </div>
-                                        <div>
-                                            <Button
-                                                text="Belanja Sekarang"
-                                                cssClass="bg-cyan-500 text-white rounded px-4 py-2 hover:bg-cyan-600"
-                                                onClick={() => this.getBuyProduct()}
-                                            />
+                                        <div className="w-full md:w-1/4 flex flex-col md:justify-center gap-4">
+                                            <div className="flex flex-col gap-2">
+                                                <h1 className="text-3xl font-bold">Zarrion<i className="text-cyan-500">Fashion</i></h1>
+                                                <p className="">Zarrion<i className="text-cyan-500">Fashion</i> adalah toko online yang menyediakan berbagai macam produk fashion dengan harga murah dan kualitas terbaik. Ayo jelajahi dan temukan produk kesukaanmu di toko kami sekarang!</p>
+                                            </div>
+                                            <div>
+                                                <Button
+                                                    text="Belanja Sekarang"
+                                                    cssClass="bg-cyan-500 text-white rounded px-4 py-2 hover:bg-cyan-600"
+                                                    onClick={() => this.getBuyProduct()}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -247,7 +249,7 @@ class Home extends Component {
                                                 onClick={() => this.getBuyProduct()}
                                             />
                                         </div>
-                                        <div className="flex gap-4 overflow-x-scroll p-2">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4" style={{ padding: '8px 16px 24px 16px'}}>
                                             {products.length > 0 
                                                 ? products.map(item => (
                                                 <CardProduct

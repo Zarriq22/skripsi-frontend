@@ -3,10 +3,16 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Form from '../components/ui/Form';
 import { withNavigate } from '../router/custom/withNavigate';
+import alert from '../components/ui/Alert';
+import LoadingRequest from '../components/ui/loading';
 
 class Register extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      loadingRequest: false
+    }
 
     this.registerFields = [
       {
@@ -51,12 +57,16 @@ class Register extends Component {
   }
 
   handleSubmit = async (formData) => {
+    this.setState({ loadingRequest: true });
     try {
       await axios.post('http://localhost:5000/api/auth/register', formData);
-      alert('Register berhasil!');
-      this.props.navigate('/');
+
+      this.setState({ loadingRequest: false });
+      alert('Register berhasil', 'Informasi');
+      this.props.navigate('/login');
     } catch (err) {
-      alert('Register gagal: ' + err.response.data.message);
+      this.setState({ loadingRequest: false });
+      alert('Register gagal: ' + err.response.data.message, 'Informasi');
     }
   };
 
@@ -69,6 +79,7 @@ class Register extends Component {
   }
 
   render() {
+    const { loadingRequest } = this.state
     return (
       <div className="w-screen h-screen bg-gradient-to-r from-cyan-500 to-blue-500">
         <div className='container mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex justify-center items-center'>
@@ -82,6 +93,7 @@ class Register extends Component {
             />
           </div>
         </div>
+        {loadingRequest && <LoadingRequest />}
       </div>
     );
   }

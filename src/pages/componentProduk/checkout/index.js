@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { withLocation } from "../../../router/custom/withLocation";
+import { withNavigate } from "../../../router/custom/withNavigate";
 import httpRequest from "../../../plugin/httpRequest";
 import { Link } from "react-router-dom";
 import LoadingRequest from "../../../components/ui/loading";
@@ -21,15 +21,41 @@ class Checkout extends Component {
       shippingCost: 0,
       loadingRequest: false,
       totalPrice: 0,
-      quantity: 1
+      quantity: {}
     };
 
     this.showModalPengirimanRef = React.createRef();
     this.showModalAlamatRef = React.createRef();
   }
 
+  componentDidMount() {
+    const { state } = this.props.location;
+    const product = state?.product || [];
+
+    const initialQuantity = {};
+    product.forEach((_, index) => {
+      initialQuantity[index] = 1;
+    });
+
+    this.setState({ quantity: initialQuantity });
+    this.getAlamat()
+  }
+
+  getAlamat = async () => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    const getAlamat = await httpRequest(process.env.REACT_APP_BASE_URL, `address/addressById/${userData.user.id}`, "GET");
+    
+    for (let val of getAlamat.address) {
+      if (val.alamatUtama === true) {
+        this.setState({ address: val.alamat })
+      }
+    }
+  }
+
   checkout = async () => {
-    const { product, note, serviceFee, shippingCost } = this.state;
+    const { note, serviceFee, shippingCost } = this.state;
+    const { state } = this.props.location;
+    const product = state?.product;
 
     this.setState({ loadingRequest: true });
     try {
@@ -41,7 +67,7 @@ class Checkout extends Component {
           price: product.price,
           image: product.image,
           description: product.description,
-          status: 1,
+          status: 0,
           note: note,
           serviceFee: serviceFee,
           shippingCost: shippingCost,
@@ -49,7 +75,7 @@ class Checkout extends Component {
       });
 
       this.setState({ loadingRequest: false });
-      this.props.history.push("/pesanan-saya");
+      this.props.navigate(`/pesanan-saya/${product.userId}`);
     } catch (e) {
       this.setState({ loadingRequest: false });
       alert("Gagal membuat pesanan");
@@ -84,18 +110,26 @@ class Checkout extends Component {
     this.setState({ address: addr });
   };
 
-  incrementQuantity = () => {
-    this.setState({
-      quantity: this.state.quantity + 1
-    })
+  incrementQuantity = (index) => {
+    this.setState(prevState => ({
+      quantity: {
+        ...prevState.quantity,
+        [index]: (prevState.quantity[index] || 0) + 1,
+      },
+    }));
   }
 
-  decrementQuantity = () => {
-    console.log('tes')
-    if (this.state.quantity === 1) return
-    this.setState({
-      quantity: this.state.quantity - 1
-    })
+  decrementQuantity = (index) => {
+    this.setState(prevState => {
+      const currentQty = prevState.quantity[index] || 0;
+      if (currentQty <= 1) return null;
+      return {
+        quantity: {
+          ...prevState.quantity,
+          [index]: currentQty - 1
+        }
+      };
+    });
   }
 
   render() {
@@ -115,13 +149,20 @@ class Checkout extends Component {
       return <div className="p-4">Data produk tidak ditemukan!</div>;
     }
 
-    const subtotal = product.price * quantity;
-    const total = subtotal + serviceFee + shippingCost;
+    let subtotal = []
+
+    for (let val of product) {
+      subtotal.push(val.price * quantity[product.indexOf(val)])
+    }
+
+    const subTotal = subtotal.reduce((total, num) => total + num, 0);
+    
+    const total = subTotal + serviceFee + shippingCost;
 
     return (
       <div className="container-fluid relative flex flex-col gap-4">
         <div className="flex items-center gap-3">
-          <Link to={`/detail-product/${product.productId}`} className="cursor-pointer">
+          <Link to={`${product.length === 1 ? '/detail-product/' + product[0].productId : '/keranjang/' + product[0].userId }`} className="cursor-pointer">
             <i className="fas fa-arrow-left text-cyan-500 text-2xl"></i>
           </Link>
           <h1 className="text-2xl font-semibold">Checkout</h1>
@@ -137,37 +178,46 @@ class Checkout extends Component {
               cssClass="btn-default text-sm"
             />
           </div>
-          <p>{address}</p>
+          {address && (
+            <div className="flex items-center gap-2">
+              <i className="fas fa-map-marker-alt text-cyan-500"></i>
+              <p>{address}</p>
+            </div>
+          )}
         </div>
 
         {/* Detail Produk */}
         <div className="bg-white p-4 rounded shadow-md">
           <h2 className="text-lg font-medium mb-2">Detail Produk</h2>
-          <div className="flex items-center gap-4">
-            <img
-              src={product.image}
-              alt={product.productName}
-              className="w-20 h-20 rounded"
-            />
-            <div className="w-full">
-              <div>
-                <p className="font-semibold">{product.productName}</p>
-              </div>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-500">
-                  Harga: Rp {formatNumber(subtotal)}
-                </p>
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <button className="bg-gray-200 w-[20px] rounded hover:bg-gray-300 cursor-pointer text-center font-bold" onClick={() => this.decrementQuantity()}>
-                    <i className="fas fa-minus"></i>
-                  </button>
-                  <span>{quantity || 0}</span>
-                  <button className="bg-gray-200 w-[20px] rounded hover:bg-gray-300 cursor-pointer text-center font-bold" onClick={() => this.incrementQuantity()}>
-                    <i className="fas fa-plus"></i>
-                  </button>
+          <div className="flex flex-col gap-2">
+            {product.map((item, index) => (
+              <div className="flex items-center gap-4" key={index}>
+                <img
+                  src={item.image}
+                  alt={item.productName}
+                  className="w-20 h-20 rounded"
+                />
+                <div className="w-full">
+                  <div>
+                    <p className="font-semibold">{item.productName}</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-500">
+                      Harga: Rp {formatNumber(item.price * quantity[index] || 1)}
+                    </p>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <button className="bg-gray-200 w-[20px] rounded hover:bg-gray-300 cursor-pointer text-center font-bold" onClick={() => this.decrementQuantity(index)}>
+                        <i className="fas fa-minus"></i>
+                      </button>
+                      <span>{quantity[index] || 1}</span>
+                      <button className="bg-gray-200 w-[20px] rounded hover:bg-gray-300 cursor-pointer text-center font-bold" onClick={() => this.incrementQuantity(index)}>
+                        <i className="fas fa-plus"></i>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
@@ -201,7 +251,7 @@ class Checkout extends Component {
           <h2 className="text-lg font-medium">Rincian Pembayaran</h2>
           <div className="flex justify-between">
             <span>Subtotal</span>
-            <span>Rp {formatNumber(subtotal)}</span>
+            <span>Rp {formatNumber(subTotal)}</span>
           </div>
           <div className="flex justify-between">
             <span>Biaya Layanan</span>
@@ -243,4 +293,4 @@ class Checkout extends Component {
   }
 }
 
-export default withLocation(Checkout);
+export default withNavigate(Checkout);

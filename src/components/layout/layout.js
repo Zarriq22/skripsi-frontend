@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Dropdown from "../ui/Dropdown";
 import { withNavigate } from "../../router/custom/withNavigate";
 import { Link } from "react-router-dom";
-import logo from "../../assets/avatar/logo.png";
+import logo from "../../assets/avatar/logoDesain.png";
 import Button from "../ui/Button";
 
 class Layout extends Component {
@@ -28,6 +28,8 @@ class Layout extends Component {
         if (item === 'Keluar') {
             localStorage.clear();
             this.props.navigate('/');
+        } else if (item === 'Profile') {
+            this.props.navigate('/profile');
         }
     }
 
@@ -60,7 +62,7 @@ class Layout extends Component {
                         <img src={logo} alt="Logo" className="rounded-full w-[50px]" />
                         <h2 className="text-xl font-bold">ZarionF</h2>
                     </div>
-                    <ul className="space-y-2">
+                    <ul className="mt-[20px] space-y-2">
                         {itemsSideBar.map(item => (
                             <Link to={item.path} key={item.key}>
                                 <li className="mb-2">

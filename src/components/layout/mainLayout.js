@@ -67,10 +67,10 @@ class MainLayout extends Component {
             name: "Profile",
             icon: "fa fa-user"
           },
-          {
-            name: "Pengaturan",
-            icon: "fa fa-gear"
-          },
+          // {
+          //   name: "Pengaturan",
+          //   icon: "fa fa-gear"
+          // },
           {
             name: "Keluar",
             icon: "fa fa-sign-out"
@@ -87,7 +87,6 @@ class MainLayout extends Component {
           { path: "/dashboard-product", label: "Beranda", key: "beranda" },
           { path: `/product-favorite/${userDetail.id}`, label: "Produk Favorit", key: "product-favorite" },
           { path: `/pesanan-saya/${userDetail.id}`, label: "Pesanan Saya", key: "pesanan-saya" },
-          { path: `/customer-service/${userDetail.id}`, label: "Customer Service", key: "customer-service" },
         ] 
       : [
           { path: "/admin-dashboard", label: "Beranda", key: "beranda" },

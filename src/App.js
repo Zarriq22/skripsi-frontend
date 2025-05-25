@@ -17,6 +17,7 @@ import PesananSaya from "./pages/componentProduk/pesananSaya";
 import Checkout from "./pages/componentProduk/checkout";
 import ManageUser from "./pages/componentAdmin/manageUser";
 import StatusDelivery from "./pages/componentAdmin/delivery";
+import ProfileUser from "./pages/componentUser/profile";
 
 
 class App extends Component {
@@ -119,12 +120,12 @@ class App extends Component {
                 }
               />
 
-              {/* <Route path="/customer-service/:userId/:productId" element={
+              <Route path="/profile" element={
                   <ProtectedRoute role="user">
-                    <CustomerService />
+                    <ProfileUser />
                   </ProtectedRoute>
                 }
-              /> */}
+              />
             </Routes>
           </MainLayout>
         </Router>

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { formatNumber } from "../../../plugin/helper";
 import Loading from "../../../components/ui/LoadingPanel";
 import LoadingRequest from "../../../components/ui/loading";
+import CardProduct from "../../../components/ui/Card";
 
 
 class DetailProduk extends Component {
@@ -18,17 +19,27 @@ class DetailProduk extends Component {
             product: {},
             activeImage: '',
             loading: true,
-            loadingRequest: false
+            loadingRequest: false,
+            relatedProduct: []
         }
     }
 
-    componentWillMount = async () => {
+    componentDidMount = async () => {
         let path = window.location.pathname
         let paths = path.split('/')
         let lastUrl = paths[paths.length - 1]
         
         if (lastUrl) {
             await this.getAllData(lastUrl)
+        }
+    }
+
+    componentDidUpdate(prevProps) {
+        const prevId = prevProps.location.pathname.split('/').pop();
+        const currentId = this.props.location.pathname.split('/').pop();
+
+        if (prevId !== currentId) {
+            this.getAllData(currentId);
         }
     }
 
@@ -39,7 +50,7 @@ class DetailProduk extends Component {
         try {
             let getMe = await httpRequest(process.env.REACT_APP_BASE_URL, `users/${userData.user.id}`, 'GET')
             let getProduct = await httpRequest(process.env.REACT_APP_BASE_URL, `products/${id}`, 'GET')
-    
+            
             this.setState({
                 detailUser: {
                     userId: getMe._id
@@ -48,11 +59,44 @@ class DetailProduk extends Component {
                 activeImage: getProduct.image?.[0] || '',
                 loading: false
             })
+            this.filterProductByKeyword(getProduct)
         } catch (e) {
             this.setState({ loading: false })
             alert('Terjadi kesalahan saat mengambil data produk', 'Informasi')
         }
     }
+
+    filterProductByKeyword = async (data) => {
+        const keywordCategory = data.kategori?.toString().toLowerCase(); // ubah jadi string kalau belum
+        const keywordName = data.productName?.toLowerCase(); // misalnya mau pakai nama juga
+
+        try {
+            const res = await httpRequest(process.env.REACT_APP_BASE_URL, 'products', 'GET');
+
+            const relatedData = res.filter(product => {
+                // Exclude produk acuan (jika pakai _id)
+                if (product._id === data._id) return false;
+
+                // Kategori harus sama
+                const sameCategory = product.kategori?.toString().toLowerCase() === keywordCategory;
+
+                // Cek apakah ada kata di productName yang mirip
+                const nameWords = keywordName?.split(" ") || [];
+                const nameMatch = nameWords.some(word =>
+                    product.productName?.toLowerCase().includes(word)
+                );
+
+                return sameCategory || nameMatch;
+            });
+
+            this.setState({
+                relatedProduct: relatedData
+            });
+        } catch (e) {
+            console.error("Gagal ambil produk:", e);
+        }
+    }
+
 
     handleThumbnailClick = (img) => {
         this.setState({ 
@@ -104,11 +148,11 @@ class DetailProduk extends Component {
             description: product.description,
         };
 
-        navigate('/checkout', { state: { product: productData } });
+        navigate('/checkout', { state: { product: [productData] } });
     }
 
     render() {
-        const { product, activeImage, loading, loadingRequest  } = this.state
+        const { product, activeImage, loading, loadingRequest, relatedProduct } = this.state
         const userData = JSON.parse(localStorage.getItem('userData'));
 
         if (loading) {
@@ -201,6 +245,26 @@ class DetailProduk extends Component {
                                 <div>
                                     <h2 className="font-bold text-2xl">Spesifikasi</h2>
                                     <p className="mt-3">{product.spesifikasi || 'Spesifikasi tidak tersedia'}</p>
+                                </div>
+                            </div>
+                            <hr />
+                            <div className="flex flex-col gap-3">
+                                <h2 className="font-bold text-2xl">Produk Terkait</h2>
+                                {relatedProduct.length === 0 && <p>Tidak ada produk terkait</p>}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                                    {relatedProduct.map((prod, i) => (
+                                        <CardProduct 
+                                            key={i}
+                                            image={prod.image[0]}
+                                            price={prod.price}
+                                            productName={prod.productName}
+                                            stock={prod.stock}
+                                            id={prod._id}
+                                            wishList={prod.wishList}
+                                            wishListId={prod.wishListId}
+                                            // addToWishlist={(data) => this.addWishlist(data)}
+                                        />
+                                    ))}
                                 </div>
                             </div>
                         </div>

@@ -4,10 +4,15 @@ import Form from '../components/ui/Form';
 import { withNavigate } from '../router/custom/withNavigate';
 import httpRequest from '../plugin/httpRequest';
 import alert from '../components/ui/Alert';
+import LoadingRequest from '../components/ui/loading';
 
 class Login extends Component {
   constructor (props) {
     super (props)
+
+    this.state = {
+      loadingRequest: false
+    }
 
     this.loginFields = [
       {
@@ -33,6 +38,7 @@ class Login extends Component {
   }
 
   handleSubmit = async (formData) => {
+    this.setState({ loadingRequest: true });
     if (formData) {
       try {
         const res = await httpRequest(process.env.REACT_APP_BASE_URL, 'auth/login', 'POST', {
@@ -42,10 +48,12 @@ class Login extends Component {
         localStorage.setItem('userData', JSON.stringify(res));
 
         if (res) {
+          this.setState({ loadingRequest: false });
           const role = res.user.role;
           window.location.href = (role === 'admin' ? '/admin-dashboard' : '/dashboard-product');
         }
       } catch (err) {
+        this.setState({ loadingRequest: false });
         console.error("Full Error Object:", err); // <== Tambahan ini bro
         alert(`Login gagal: ${err.response?.data?.message || 'Error'}`, 'Informasi');
       }
@@ -61,6 +69,7 @@ class Login extends Component {
   }
 
   render() {
+    const { loadingRequest } = this.state
     return (
       <div className="w-screen h-screen bg-gradient-to-r from-cyan-500 to-blue-500">
         <div className='container mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex justify-center items-center'>
@@ -74,6 +83,7 @@ class Login extends Component {
             />
           </div>
         </div>
+        {loadingRequest && <LoadingRequest />}
       </div>
     );
   }

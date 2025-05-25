@@ -4,6 +4,7 @@ import Form from "../../components/ui/Form";
 import ScrollView from "../../components/ui/Scroll";
 import httpRequest from "../../plugin/httpRequest";
 import { category } from "../../plugin/lookup";
+import LoadingRequest from "../../components/ui/loading";
 
 class ModalProduk extends Component {
     constructor(props) {
@@ -11,7 +12,8 @@ class ModalProduk extends Component {
 
         this.state = {
             popupVisible: false,
-            formData: {}
+            formData: {},
+            loadingRequest: false
         }
 
         this.showModal = this.showModal.bind(this);
@@ -108,6 +110,7 @@ class ModalProduk extends Component {
 
     onSubmit = async () => {
         let data = this.formRef.current.state.formData
+        this.setState({ loadingRequest: true })
         if (data._id) {
             try {
                 let result = await httpRequest(process.env.REACT_APP_BASE_URL, 'products', 'PUT', {
@@ -117,10 +120,12 @@ class ModalProduk extends Component {
                 
                 if (result) {
                     this.hideModal()
+                    this.setState({ loadingRequest: false })
                     this.props.refreshData()
                 }
             } catch (e) {
                 console.log(e)
+                this.setState({ loadingRequest: false })
             }
         } else {
             try {
@@ -130,10 +135,12 @@ class ModalProduk extends Component {
                 
                 if (result) {
                     this.hideModal()
+                    this.setState({ loadingRequest: false })
                     this.props.refreshData()
                 }
             } catch (e) {
                 console.log(e)
+                this.setState({ loadingRequest: false })
             }
         }
     };
@@ -154,6 +161,7 @@ class ModalProduk extends Component {
 
     render() {
         const element = this.renderElement()
+        const { loadingRequest } = this.state
         return (
             <Popup 
                 visible={this.state.popupVisible}
@@ -168,6 +176,8 @@ class ModalProduk extends Component {
                         {element}
                     </ScrollView>
                 </div>
+
+                {loadingRequest && <LoadingRequest />}
             </Popup>
         )
     }

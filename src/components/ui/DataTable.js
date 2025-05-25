@@ -196,7 +196,12 @@ class DataTable extends Component {
                                             const displayValue = type === 'number' ? (rawValue ? formatNumber(rawValue) : rawValue) : col.lookup ? col.lookup[rawValue] || rawValue : rawValue;
 
                                             return (
-                                                <td key={colIndex}>
+                                                <td 
+                                                    key={colIndex} 
+                                                    className={
+                                                        colIndex === columns.length - 1 ? 'line-clamp-2 h-15 w-full' : 'h-12'
+                                                    }
+                                                >
                                                 {col.render
                                                     ? col.render(row, rowIndex + indexOfFirstRow)
                                                     : displayValue}

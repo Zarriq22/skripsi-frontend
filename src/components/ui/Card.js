@@ -4,36 +4,34 @@ import Button from "./Button"
 
 function CardProduct ({ image, price, productName, stock, id, wishList, wishListId, addToWishlist }) {
     return (
-        <div className="card-product" style={{ position: 'relative'}}>
+        <div className="card-product h-full border border-gray-200 rounded-md" style={{ position: 'relative'}}>
             <Link to={`/detail-product/${id}`} className="btn p-0">
-                <div className="card pt-4">
-                    <div className="card-header">
+                <div className="w-full bg-white rounded-md shadow p-2 flex flex-col justify-between hover:shadow-lg">
+                    {/* Gambar */}
+                    <div className="w-full h-[130px] bg-gray-100 rounded overflow-hidden">
                         <img 
                             src={image} 
-                            alt="Product" 
-                            className="card-image"
+                            alt={productName} 
+                            className="w-full h-full object-cover"
                         />
                     </div>
-                    <div className="card-body">
-                        <h5 className="card-title">{productName}</h5>
-                        <div className="card-content">
-                            <div className="flex items-center gap-1">
-                                <div className="w-[25%] flex justify-between items-center">
-                                    <span style={{ fontSize: '14px' }}>Price</span>
-                                    <span style={{ fontSize: '14px' }}>:</span>
-                                </div>
-                                <div>
-                                    <span style={{ fontSize: '14px' }}>{formatNumber(price)}</span>
-                                </div>
+
+                    {/* Konten */}
+                    <div className="flex flex-col justify-between flex-1">
+                        {/* Nama Produk (tinggi tetap) */}
+                        <div className="h-[40px]">
+                            <h5 className="text-sm font-medium leading-tight mt-2 mb-1 line-clamp-2">
+                                {productName}
+                            </h5>
+                        </div>
+
+                        {/* Harga dan stok - selalu di bawah */}
+                        <div className="mt-auto">
+                            <div className="text-red-600 font-semibold text-sm">
+                                Rp{formatNumber(price)}
                             </div>
-                            <div className="flex items-center gap-1">
-                                <div className="w-[25%] flex justify-between items-center">
-                                    <span style={{ fontSize: '14px' }}>Stock</span>
-                                    <span style={{ fontSize: '14px' }}>:</span>
-                                </div>
-                                <div>
-                                    <span style={{ fontSize: '14px' }}>{stock}</span>
-                                </div>
+                            <div className="text-gray-500 text-xs">
+                                Stok: {stock}
                             </div>
                         </div>
                     </div>
@@ -41,7 +39,7 @@ function CardProduct ({ image, price, productName, stock, id, wishList, wishList
             </Link>
             <div className="absolute" style={{ top: '1%', right: '0%' }}>
                 <Button 
-                    text={<i className={wishList === true ? "fa-solid fa-heart text-red-500" : "fa-regular fa-heart"} style={{ fontSize: '20px' }}></i>}
+                    text={<i className={`${wishList === true ? 'fa-solid fa-heart' : 'fa-regular fa-heart'} hover:text-red-500`} style={{ fontSize: '20px' }}></i>}
                     cssClass="btn"
                     onClick={() => wishList === true ? addToWishlist({ image, price, productName, stock, id, updateWishList: false, wishListId: null }) : addToWishlist({ image, price, productName, stock, id, updateWishList: true, wishListId })}
                 />

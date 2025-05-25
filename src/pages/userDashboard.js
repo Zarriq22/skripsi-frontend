@@ -140,7 +140,7 @@ class UserDashboard extends Component {
                         </div>
                     </div>
                     <div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6" style={{ padding: '8px 16px 24px 16px', gap: '24px' }}>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
                             {this.state.filteredProduct.map((item, index) => {
                                 return (
                                     <CardProduct 

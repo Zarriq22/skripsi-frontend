@@ -232,27 +232,30 @@ class CustomerService extends Component {
                             )}
                         </div>
                     </div>
-                    <div className="flex gap-2 overflow-x-auto w-full pb-2">
-                        {this.state.quickQuestions && (
-                            <div className="flex gap-2 overflow-x-auto w-full pb-2">
-                                {this.state.quickQuestions.map((item, idx) => (
-                                    <button
-                                        key={`prod-${idx}`}
-                                        onClick={() => this.setState({ chatbotInput: item }, () => this.sendChatbotMessage())}
-                                        style={{
-                                            padding: '6px 10px',
-                                            backgroundColor: '#ffeeba',
-                                            border: 'none',
-                                            borderRadius: '16px',
-                                            cursor: 'pointer',
-                                            fontSize: '12px'
-                                        }}
-                                    >
-                                        {item}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
+                    <div className="w-full">
+                        <div className="pb-2">
+                            {this.state.quickQuestions && (
+                                <div className="flex gap-2">
+                                    {this.state.quickQuestions.map((item, idx) => (
+                                        <span
+                                            key={`prod-${idx}`}
+                                            onClick={() => this.setState({ chatbotInput: item }, () => this.sendChatbotMessage())}
+                                            style={{
+                                                padding: '6px 10px',
+                                                backgroundColor: '#ffeeba',
+                                                border: 'none',
+                                                borderRadius: '16px',
+                                                cursor: 'pointer',
+                                                fontSize: '12px'
+                                            }}
+                                            className="line-clamp-3 h-15 w-full 2xl:h-full"
+                                        >
+                                            {item}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
                     <div>
                         <div style={{ padding: '10px', borderTop: '1px solid #ccc', display: 'flex', width: '100%' }}>
@@ -268,89 +271,6 @@ class CustomerService extends Component {
                         </div>
                     </div>
                 </div>
-                {/* <div className="">
-                    <div style={{ 
-                        backgroundColor: '#fff',
-                        padding: '10px', 
-                        borderBottom: '1px solid #ccc', 
-                        fontWeight: 'bold', 
-                        display: 'flex', 
-                        justifyContent: 'space-between' 
-                    }}>
-                        <span>Customer Service</span>
-                    </div>
-                    <div style={{  }}>
-                        <div className="chat-container px-[12px] pt-[12px]" style={{ height: 'calc(100vh - 330px)', overflowY: 'auto', background: '#f0f0f0', borderRadius: '8px', marginBottom: '12px' }}>
-                            {this.state.chatbotMessages.map((msg, index) => (
-                                <div key={index} style={{
-                                    textAlign: msg.role === 'user' ? 'right' : 'left',
-                                    marginBottom: '8px'
-                                }}>
-                                    <div style={{
-                                        display: 'inline-block',
-                                        padding: '8px 12px',
-                                        borderRadius: '12px',
-                                        backgroundColor: msg.role === 'user' ? '#4caf50' : '#ffffff',
-                                        color: msg.role === 'user' ? '#fff' : '#000',
-                                        maxWidth: '70%'
-                                    }}>
-                                        {msg.content}
-                                    </div>
-                                </div>
-                            ))}
-
-                            {this.state.showLoadingChat && (
-                                <div style={{ textAlign: 'left', marginBottom: '8px' }}>
-                                    <div style={{
-                                        display: 'inline-block',
-                                        padding: '8px 12px',
-                                        borderRadius: '12px',
-                                        backgroundColor: '#f0f0f0',
-                                        color: '#000'
-                                    }}>
-                                        <img 
-                                            src={loadingChat} 
-                                            alt="Loading..." 
-                                            style={{ width: '20px', height: '20px' }} 
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                        <div style={{ width: '100%', padding: '0 10px 10px 10px', display: 'flex', gap: '6px' }}>
-                            <div className="quick-questions">
-                                {this.state.quickQuestions.map((item, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => this.setState({ chatbotInput: item }, () => this.sendChatbotMessage())}
-                                        style={{
-                                            padding: '6px 10px',
-                                            backgroundColor: '#e0e0e0',
-                                            border: 'none',
-                                            borderRadius: '16px',
-                                            cursor: 'pointer',
-                                            fontSize: '12px'
-                                        }}
-                                    >
-                                        {item}
-                                    </button>
-                                ))}
-
-                            </div>
-                        </div>
-                        <div style={{ padding: '10px', borderTop: '1px solid #ccc', display: 'flex', width: '100%' }}>
-                            <input
-                                type="text"
-                                value={this.state.chatbotInput}
-                                onChange={(e) => this.setState({ chatbotInput: e.target.value })}
-                                onKeyDown={this.handleKeyDownChatbot}
-                                placeholder="Ketik pesan..."
-                                style={{ flex: 1, marginRight: '8px', padding: '6px', borderRadius: '6px', border: '1px solid #ccc' }}
-                            />
-                            <button onClick={this.sendChatbotMessage} style={{ padding: '6px 12px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Kirim</button>
-                        </div>
-                    </div>
-                </div> */}
             </div>
         );
     }
