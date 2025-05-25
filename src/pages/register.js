@@ -59,7 +59,7 @@ class Register extends Component {
   handleSubmit = async (formData) => {
     this.setState({ loadingRequest: true });
     try {
-      await axios.post('http://localhost:5000/api/auth/register', formData);
+      await axios.post(process.env.REACT_APP_API_URL, 'auth/register', formData);
 
       this.setState({ loadingRequest: false });
       alert('Register berhasil', 'Informasi');
