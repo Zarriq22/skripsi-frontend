@@ -5,6 +5,7 @@ import Form from '../components/ui/Form';
 import { withNavigate } from '../router/custom/withNavigate';
 import alert from '../components/ui/Alert';
 import LoadingRequest from '../components/ui/loading';
+import httpRequest from '../plugin/httpRequest';
 
 class Register extends Component {
   constructor(props) {
@@ -59,7 +60,9 @@ class Register extends Component {
   handleSubmit = async (formData) => {
     this.setState({ loadingRequest: true });
     try {
-      await axios.post(process.env.REACT_APP_BASE_URL, 'auth/register', formData);
+      await httpRequest(process.env.REACT_APP_BASE_URL, 'auth/register', 'POST', {
+        values: formData
+      });
 
       this.setState({ loadingRequest: false });
       alert('Register berhasil', 'Informasi');
