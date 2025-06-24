@@ -199,7 +199,7 @@ class DataTable extends Component {
                                                 <td 
                                                     key={colIndex} 
                                                     className={
-                                                        colIndex === columns.length - 1 ? 'line-clamp-2 h-15 w-full' : 'h-12'
+                                                        colIndex === 1 || colIndex === columns.length - 1 ? 'line-clamp-2 h-15 w-full' : 'h-12'
                                                     }
                                                 >
                                                 {col.render

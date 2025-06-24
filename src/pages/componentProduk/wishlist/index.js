@@ -57,7 +57,7 @@ class ProductFavorite extends Component {
                             return (
                                 <CardProduct 
                                     key={index}
-                                    image={item.image[0]}
+                                    image={item.images[0]}
                                     price={item.price}
                                     productName={item.productName}
                                     stock={item.stock}

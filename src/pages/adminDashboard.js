@@ -1,13 +1,18 @@
 import React, { Component } from "react";
 import httpRequest from "../plugin/httpRequest";
 import DataProduk from "./dataProduk";
+import axios from "axios";
 
 class AdminDashboard extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            detail: {}
+            detail: {},
+            selectedFile: null,
+            status: '',
+            previewUrl: '',
+            files: []
         }
 
         this.dataProductRef = React.createRef();
@@ -15,6 +20,7 @@ class AdminDashboard extends Component {
 
     componentWillMount() {
         this.getUser()
+        this.fetchFiles();
     }
 
     getUser = async () => {
@@ -29,6 +35,42 @@ class AdminDashboard extends Component {
             })
         }
     }
+
+    fetchFiles = async () => {
+        try {
+            const res = await httpRequest(process.env.REACT_APP_BASE_URL, 'upload', 'GET');
+            this.setState({ files: res });
+        } catch (err) {
+            console.error('Error fetching files:', err);
+        }
+    };
+
+    handleFileChange = (event) => {
+        const file = event.target.files[0];
+        this.setState({
+            selectedFile: file,
+            previewUrl: URL.createObjectURL(file) // Untuk preview image
+        });
+    };
+
+    handleUpload = async () => {
+        const { selectedFile } = this.state;
+        if (!selectedFile) return alert("Pilih file dulu bro");
+
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        try {
+        const res = await axios.post(process.env.REACT_APP_BASE_URL + 'upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        this.setState({ status: 'Upload sukses! Path: ' + res.data.file.path });
+        } catch (error) {
+        console.error(error);
+        this.setState({ status: 'Upload gagal!' });
+        }
+    };
 
     render() {
         return (

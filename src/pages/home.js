@@ -254,7 +254,7 @@ class Home extends Component {
                                                 ? products.map(item => (
                                                 <CardProduct
                                                     key={item._id}
-                                                    image={item.image[0]}
+                                                    image={item.images[0]}
                                                     price={item.price}
                                                     productName={item.productName}
                                                     stock={item.stock}

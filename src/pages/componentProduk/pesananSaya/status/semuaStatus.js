@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { statusPesanan } from "../../../../plugin/lookup";
-import { formatNumber } from "../../../../plugin/helper";
+import { formatNumber, generateImage } from "../../../../plugin/helper";
 
 class SemuaStatus extends Component {
     filterData = () => {
@@ -32,7 +32,7 @@ class SemuaStatus extends Component {
                     const status = statusPesanan().find(val => val.value === String(item.status));
                     return (
                         <div key={index} className="flex gap-4 border p-4 rounded shadow">
-                            <img src={item.image} alt="" className="w-[100px] h-[100px] object-cover" />
+                            <img src={generateImage(item.images[0])} alt="" className="w-[100px] h-[100px] object-cover" />
                             <div className="flex flex-col gap-1 w-full">
                                 <div className="flex justify-between">
                                     <span className="font-semibold">{item.productName}</span>

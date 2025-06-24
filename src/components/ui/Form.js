@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { Link } from "react-router-dom";
-import { formatNumber } from "../../plugin/helper";
+import { formatNumber, generateImage } from "../../plugin/helper";
 
 class Form extends Component {
     constructor(props) {
@@ -16,13 +16,20 @@ class Form extends Component {
         
         this.state = {
             formData: {},
+            previews:{},
             errors: {},
             hidden: false,
-            newHidden: false
+            newHidden: false,
+            uploadImageId: 0
         };
         
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    componentWillUnmount() {
+        // bebaskan URL object
+        Object.values(this.state.previews).flat().forEach(u => URL.revokeObjectURL(u));
     }
 
     validatePassword = (password) => {
@@ -52,45 +59,31 @@ class Form extends Component {
         }));
     }
 
-    handleFileChange = (e) => {
-        const dataField = this.props.dataField.find(field => field.name === e.target.name);
-        const files = e.target.files;
-        const isMultiple = dataField.multiple;
-    
-        if (isMultiple) {
-            const readers = Array.from(files).map(file => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            });
-    
-            Promise.all(readers).then(results => {
-                this.setState(prevState => ({
-                    formData: {
-                        ...prevState.formData,
-                        [dataField.name]: results
-                    }
-                }));
-            });
-        } else {
-            const file = files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                this.setState(prevState => ({
-                    formData: {
-                        ...prevState.formData,
-                        [dataField.name]: reader.result
-                    }
-                }));
+    handleFileChange = (e, field) => {
+        const newFiles = Array.from(e.target.files);
+
+        this.setState(prevState => {
+            // Ambil file & preview lama jika multiple
+            const oldFiles = field.multiple ? prevState.formData[field.name] || [] : null;
+            const oldPreviews = field.multiple ? prevState.previews[field.name] || [] : null;
+
+            const updatedFiles = field.multiple ? [...oldFiles, ...newFiles] : newFiles[0] || null;
+            const updatedPreviews = field.multiple
+                ? [...oldPreviews, ...newFiles.map(file => URL.createObjectURL(file))]
+                : newFiles[0] ? URL.createObjectURL(newFiles[0]) : null;
+
+            return {
+                formData: {
+                    ...prevState.formData,
+                    [field.name]: updatedFiles
+                },
+                previews: {
+                    ...prevState.previews,
+                    [field.name]: updatedPreviews
+                }
             };
-            if (file) {
-                reader.readAsDataURL(file);
-            }
-        }
-    }
+        });
+    };
     
     handleSubmit = (e) => {
         e.preventDefault();
@@ -104,7 +97,7 @@ class Form extends Component {
         
         // Call parent onSubmit with form data
         if (this.props.onSubmit) {
-            this.props.onSubmit(this.state.formData);
+            this.props.onSubmit(this.state.formData, this.state.uploadImageId);
         }
     }
     
@@ -140,13 +133,28 @@ class Form extends Component {
         const filledData = {};
 
         this.props.dataField.forEach(field => {
-            // Ambil dari data kalo ada, kalau enggak pakai defaultValue
             filledData[field.name] = data[field.name] ?? field.defaultValue ?? '';
             filledData['_id'] = data['_id'] ?? field.defaultValue ?? '';
 
         });
 
-        this.setState({ formData: filledData });
+        const previews = {};
+
+        this.props.dataField.forEach(field => {
+            if (field.type === 'file') {
+                const value = data[field.name];
+
+                if (field.multiple && Array.isArray(value)) {
+                    previews[field.name] = value.map(img =>
+                        generateImage(img.path)
+                    );
+                } else if (value?.path) {
+                    previews[field.name] = generateImage(value.path);
+                }
+            }
+        });
+
+        this.setState({ formData: filledData, uploadImageId: data.uploadImageId, previews });
     };
     
     renderField = (field) => {
@@ -154,6 +162,7 @@ class Form extends Component {
         const { formData, errors, hidden, newHidden } = this.state;
         const value = formData[field.name] || '';
         const error = errors[field.name] || null;
+        const previews = this.state.previews[field.name];
 
         if (field.visible === false) {
             return null;
@@ -381,7 +390,7 @@ class Form extends Component {
                                             id={field.name}
                                             name={field.name}
                                             accept={field.accept || 'image/*'}
-                                            onChange={this.handleFileChange}
+                                            onChange={(e) => this.handleFileChange(e, field)}
                                             className={`form-input ${error ? 'is-invalid' : ''} ${field.className || ''}`} // Support custom class
                                             disabled={field.readOnly || this.props.readOnly}
                                             multiple={field.multiple}
@@ -389,22 +398,17 @@ class Form extends Component {
                                         {error && <div className="invalid-feedback">{error}</div>}
                                     </div>
                                 </div>
-                                {field.multiple && Array.isArray(formData[field.name]) && formData[field.name].map((img, index) => (
-                                    <img
-                                        key={index}
-                                        src={img}
-                                        alt={`Preview-${index}`}
-                                        style={{ maxWidth: '100px', marginTop: '10px', marginRight: '10px' }}
-                                    />
-                                ))}
+                                {/* PREVIEW */}
+                                <div className="slider-image w-full flex flex-wrap gap-2 overflow-x-auto">
+                                    {field.multiple && Array.isArray(previews) &&
+                                        previews.map((src, i) => (
+                                            <img key={i} src={src} alt={`Preview-${i}`} style={{ maxWidth: 100, margin: 10 }} />
+                                    ))}
 
-                                {!field.multiple && formData[field.name] && (
-                                    <img 
-                                        src={formData[field.name]} 
-                                        alt="Preview" 
-                                        style={{ maxWidth: '100px', marginTop: '10px' }} 
-                                    />
-                                )}
+                                    {!field.multiple && previews && (
+                                        <img src={previews} alt="Preview" style={{ maxWidth: 100, marginTop: 10 }} />
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { formatNumber } from "../../plugin/helper"
+import { formatNumber, generateImage } from "../../plugin/helper"
 import Button from "./Button"
 
 function CardProduct ({ image, price, productName, stock, id, wishList, wishListId, addToWishlist }) {
@@ -10,8 +10,8 @@ function CardProduct ({ image, price, productName, stock, id, wishList, wishList
                     {/* Gambar */}
                     <div className="w-full h-[130px] bg-gray-100 rounded overflow-hidden">
                         <img 
-                            src={image} 
-                            alt={productName} 
+                            src={generateImage(image.path)} 
+                            alt={image.filename} 
                             className="w-full h-full object-cover"
                         />
                     </div>

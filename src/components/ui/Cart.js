@@ -1,6 +1,6 @@
 import { Component } from "react";
 import Button from "./Button";
-import { formatNumber } from "../../plugin/helper";
+import { formatNumber, generateImage } from "../../plugin/helper";
 
 class Cart extends Component {
   constructor(props) {
@@ -85,7 +85,7 @@ class Cart extends Component {
           </div>
           <div className="cart-content" >
             {/* Gambar Produk */}
-            <img className="cart-image" src={item.products[0].image} alt="Product" />
+            <img className="cart-image" src={generateImage(item.products[0].image)} alt="Product" />
 
             {/* Detail Produk */}
             <div className="cart-details">
@@ -94,7 +94,8 @@ class Cart extends Component {
                 {/* Nama Produk */}
                 <div>
                   <div className="product-name" >{item.products[0].productName}</div>
-                  <div className="product-variant" >Variasi: <span style={{ fontWeight: 'bold' }}>Hijau, Couple pendek</span></div>
+                  <div className="product-variant" >Warna: <span style={{ fontWeight: 'bold' }}></span></div>
+                  <div className="product-variant" >Ukuran: <span style={{ fontWeight: 'bold' }}></span></div>
                 </div>
 
                 {/* Harga & Kuantitas */}

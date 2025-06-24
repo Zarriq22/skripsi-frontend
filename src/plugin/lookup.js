@@ -9,21 +9,28 @@ export const userType = () =>
 
 export const category = () =>
     Object.entries({
-        1: "Pakaian Pria",
-        2: "Pakaian Wanita",
-        3: "Tas",
-        4: "Sepatu",
-        5: "Jam Tangan",
-        6: "Topi",
-        7: "Pakaian Muslim",
-        8: "Pakaian Muslimah",
-        9: "Sarung",
-        10: "Mukena",
-        11: "Kerudung",
-        12: "Peci",
-        13: "Cincin",
-        14: "Kacamata",
-        15: "Aksesoris"
+        "Pakaian": "Pakaian",
+        "Tas": "Tas",
+        "Sepatu": "Sepatu",
+        "Jam": "Jam Tangan",
+        "Topi": "Topi",
+        "Sarung": "Sarung",
+        "Mukena": "Mukena",
+        "Kerudung": "Kerudung",
+        "Peci": "Peci",
+        "Perhiasan": "Perhiasan",
+        "Kacamata": "Kacamata",
+        "Aksesoris": "Aksesoris"
+    }).map(([value, label]) => ({
+        value,
+        label
+}));
+
+export const gender = () =>
+    Object.entries({
+        "Unisex": "Unisex",
+        "Laki-laki": "Laki-laki",
+        "Perempuan": "Perempuan"
     }).map(([value, label]) => ({
         value,
         label
@@ -31,6 +38,7 @@ export const category = () =>
 
 export const statusPesanan = () =>
     Object.entries({
+        0: "Sedang Dibuat",
         1: "Sedang Dikemas",
         2: "Sedang Dikirim",
         3: "Pesanan Selesai",

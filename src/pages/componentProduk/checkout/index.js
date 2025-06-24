@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import LoadingRequest from "../../../components/ui/loading";
 import Button from "../../../components/ui/Button";
 import ModalJasaPengiriman from "./modalPengiriman";
-import { formatNumber } from "../../../plugin/helper";
+import { formatNumber, generateImage } from "../../../plugin/helper";
 import ModalAlamat from "./modalAlamat";
 
 class Checkout extends Component {
@@ -53,29 +53,44 @@ class Checkout extends Component {
   }
 
   checkout = async () => {
-    const { note, serviceFee, shippingCost } = this.state;
+    const { note, serviceFee, shippingCost, quantity } = this.state;
     const { state } = this.props.location;
     const product = state?.product;
 
     this.setState({ loadingRequest: true });
     try {
-      await httpRequest(process.env.REACT_APP_BASE_URL, "pesanan", "POST", {
-        values: {
-          productName: product.productName,
-          productId: product._id,
-          userId: product.userId,
-          price: product.price,
-          image: product.image,
-          description: product.description,
-          status: 0,
-          note: note,
-          serviceFee: serviceFee,
-          shippingCost: shippingCost,
-        },
-      });
+      for (let i = 0; i < product.length; i++) {
+        const val = product[i];
+        const qty = quantity[i] || 0; // fallback ke 0 kalau undefined
+
+        await httpRequest(process.env.REACT_APP_BASE_URL, "pesanan", "POST", {
+          values: {
+            productName: val.productName,
+            productId: val._id,
+            userId: val.userId,
+            price: val.price,
+            image: val.image,
+            description: val.description,
+            status: 0,
+            note: note,
+            serviceFee: serviceFee,
+            shippingCost: shippingCost,
+            quantity: qty, // bisa disimpan juga di data pesanan
+          },
+        });
+
+        await httpRequest(process.env.REACT_APP_BASE_URL, 'products', 'PUT', {
+          key: val._id,
+          values: {
+            values: {
+              stock: val.preQuantity - qty,
+            }
+          }
+        });
+      }
 
       this.setState({ loadingRequest: false });
-      this.props.navigate(`/pesanan-saya/${product.userId}`);
+      this.props.navigate(`/pesanan-saya/${product[0].userId}`);
     } catch (e) {
       this.setState({ loadingRequest: false });
       alert("Gagal membuat pesanan");
@@ -193,7 +208,7 @@ class Checkout extends Component {
             {product.map((item, index) => (
               <div className="flex items-center gap-4" key={index}>
                 <img
-                  src={item.image}
+                  src={generateImage(item.image)}
                   alt={item.productName}
                   className="w-20 h-20 rounded"
                 />

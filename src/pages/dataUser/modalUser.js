@@ -94,7 +94,7 @@ class ModalUser extends Component {
         let data = this.formRef.current.state.formData 
         if (data.id) {
             try {
-                let result = await httpRequest(process.env.REACT_APP_BASE_URL, 'products', 'PUT', {
+                let result = await httpRequest(process.env.REACT_APP_BASE_URL, 'users', 'PUT', {
                     values: data,
                     key: data._id
                 })
@@ -108,7 +108,7 @@ class ModalUser extends Component {
             }
         } else {
             try {
-                let result = await httpRequest(process.env.REACT_APP_BASE_URL, 'products', 'POST', {
+                let result = await httpRequest(process.env.REACT_APP_BASE_URL, 'users', 'POST', {
                     values: data
                 })
                 

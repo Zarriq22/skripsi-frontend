@@ -3,6 +3,7 @@ import httpRequest from "../../plugin/httpRequest";
 import loadingChat from '../../assets/gif/loading.gif'
 import Button from "../../components/ui/Button";
 import ReactMarkdown from "react-markdown";
+import { formatNumber, generateImage } from "../../plugin/helper";
 
 class CustomerService extends Component {
     constructor(props) {
@@ -94,6 +95,7 @@ class CustomerService extends Component {
     }
 
     sendChatbotMessage = async () => {
+        this.scrollChatbot();
         const newMessage = this.state.chatbotInput;
         const userData = JSON.parse(localStorage.getItem('userData'))
         if (!newMessage) return;
@@ -124,7 +126,6 @@ class CustomerService extends Component {
                 chatbotMessages: [...updatedMessages, reply],
                 showLoadingChat: false
             });
-            this.scrollChatbot();
         } catch (err) {
             console.error(err);
             const replay = { role: 'assistant', content: 'Maaf, DeepSeek sedang tidak bisa menerima pesan, coba lagi nanti.' };
@@ -168,7 +169,7 @@ class CustomerService extends Component {
                         />
                     </div>
                     <div>
-                        <div className="chat-container px-[12px] pt-[12px]" style={{ overflowY: 'auto', background: '#f0f0f0', borderRadius: '8px', marginBottom: '12px' }}>
+                        <div className="chat-container relative px-[12px] pt-[12px]" style={{ overflowY: 'auto', background: '#f0f0f0', borderRadius: '8px', marginBottom: '12px' }}>
                             {this.state.productData && (
                                 <div style={{
                                     backgroundColor: '#fff',
@@ -179,16 +180,16 @@ class CustomerService extends Component {
                                     gap: '12px',
                                     boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                                 }}>
-                                    <img src={this.state.productData.image} alt={this.state.productData.productName}
-                                        style={{ width: '80px', height: '80px', borderRadius: '6px', objectFit: 'cover' }}
+                                    <img src={generateImage(this.state.productData.image[0].path)} alt={this.state.productData.productName}
+                                        style={{ width: '120px', height: '120px', borderRadius: '6px', objectFit: 'cover' }}
                                     />
                                     <div>
                                         <h2 style={{ fontWeight: 'bold', fontSize: '16px', marginBottom: '4px' }}>
                                             {this.state.productData.productName}
                                         </h2>
-                                        <p style={{ margin: '0 0 4px 0', fontSize: '14px' }}>{this.state.productData.description}</p>
+                                        {/* <p style={{ margin: '0 0 4px 0', fontSize: '14px' }}>{this.state.productData.description}</p> */}
                                         <p style={{ margin: '0', color: 'green', fontWeight: 'bold' }}>
-                                            Rp {Number(this.state.productData.price).toLocaleString('id-ID')}
+                                            Rp {formatNumber(this.state.productData.price)}
                                         </p>
                                         <p style={{ fontSize: '12px', color: '#555' }}>Stok: {this.state.productData.stock}</p>
                                     </div>

@@ -5,7 +5,7 @@ import alert from "../../../components/ui/Alert";
 import RatingStars from "../../../components/ui/Rating";
 import { withNavigate } from "../../../router/custom/withNavigate";
 import { Link } from "react-router-dom";
-import { formatNumber } from "../../../plugin/helper";
+import { formatNumber, generateImage } from "../../../plugin/helper";
 import Loading from "../../../components/ui/LoadingPanel";
 import LoadingRequest from "../../../components/ui/loading";
 import CardProduct from "../../../components/ui/Card";
@@ -56,7 +56,7 @@ class DetailProduk extends Component {
                     userId: getMe._id
                 },
                 product: getProduct,
-                activeImage: getProduct.image?.[0] || '',
+                activeImage: getProduct.image?.[0].path || '',
                 loading: false
             })
             this.filterProductByKeyword(getProduct)
@@ -100,7 +100,7 @@ class DetailProduk extends Component {
 
     handleThumbnailClick = (img) => {
         this.setState({ 
-            activeImage: img 
+            activeImage: img.path
         });
     }
 
@@ -137,14 +137,15 @@ class DetailProduk extends Component {
     }
     
     handleBuyNow = () => {
-        const { detailUser, product } = this.state;
+        const { detailUser, product, activeImage } = this.state;
         const { navigate } = this.props;
         const productData = {
             productName: product.productName,
             productId: product._id,
             userId: detailUser.userId,
             price: product.price,
-            image: product.image[0],
+            preQuantity: product.stock,
+            image: activeImage,
             description: product.description,
         };
 
@@ -166,12 +167,12 @@ class DetailProduk extends Component {
                             <i className="fas fa-arrow-left text-cyan-500 text-2xl"></i>
                         </Link>
                     </div>
-                    <div className="flex flex-col gap-6">
-                        <div className="flex flex-col justify-center items-center gap-3">
-                            <div className="rounded p-3 text-center h-[75%] w-[75%]">
+                    <div className="flex flex-col lg:flex-row lg:justify-start gap-6">
+                        <div className="flex flex-col justify-center items-center gap-3 xl:w-5/2">
+                            <div className="rounded p-3 text-center">
                                 {product.image && product.image[0] ? (
                                     <img 
-                                        src={activeImage} 
+                                        src={generateImage(activeImage)} 
                                         alt="Product" 
                                         className="img-fluid rounded" 
                                     />
@@ -184,7 +185,7 @@ class DetailProduk extends Component {
                                 {product.image?.map((img, i) => (
                                     <img 
                                         key={i}
-                                        src={img}
+                                        src={generateImage(img.path)}
                                         alt={`Thumb-${i}`}
                                         onClick={() => this.handleThumbnailClick(img)}
                                         style={{ 
@@ -214,6 +215,13 @@ class DetailProduk extends Component {
                                 {/* <p className="mt-3">{product.description}</p> */}
                                 {/* <p><strong>Kategori:</strong>{kategori.find(cat => cat.value === product.kategori)?.label}</p> */}
                             </div>
+                            <div className="flex flex-col gap-3">
+                                <div>
+                                    <h2 className="font-bold text-2xl">Deskripsi Produk</h2>
+                                    <p className="mt-3">{product.description}</p>
+                                </div>
+                            </div>
+                            <hr />
                             <div className="mt-4 flex justify-between gap-2">
                                 <div className="flex items-center gap-2">
                                     <button 
@@ -236,36 +244,30 @@ class DetailProduk extends Component {
                                     </Link>
                                 </div>
                             </div>
-                            <hr />
-                            <div className="flex flex-col gap-3">
-                                <div>
-                                    <h2 className="font-bold text-2xl">Deskripsi Produk</h2>
-                                    <p className="mt-3">{product.description}</p>
-                                </div>
-                                <div>
-                                    <h2 className="font-bold text-2xl">Spesifikasi</h2>
-                                    <p className="mt-3">{product.spesifikasi || 'Spesifikasi tidak tersedia'}</p>
-                                </div>
-                            </div>
-                            <hr />
-                            <div className="flex flex-col gap-3">
-                                <h2 className="font-bold text-2xl">Produk Terkait</h2>
-                                {relatedProduct.length === 0 && <p>Tidak ada produk terkait</p>}
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                                    {relatedProduct.map((prod, i) => (
-                                        <CardProduct 
-                                            key={i}
-                                            image={prod.image[0]}
-                                            price={prod.price}
-                                            productName={prod.productName}
-                                            stock={prod.stock}
-                                            id={prod._id}
-                                            wishList={prod.wishList}
-                                            wishListId={prod.wishListId}
-                                            // addToWishlist={(data) => this.addWishlist(data)}
-                                        />
-                                    ))}
-                                </div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div className="flex flex-col gap-3">
+                        <div>
+                            <h2 className="font-bold text-2xl">Spesifikasi</h2>
+                            <p className="mt-3">{product.spesifikasi || 'Spesifikasi tidak tersedia'}</p>
+                        </div>
+                        <div>
+                            <h2 className="font-bold text-2xl">Produk Terkait</h2>
+                            {relatedProduct.length === 0 && <p>Tidak ada produk terkait</p>}
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                                {relatedProduct.map((prod, i) => (
+                                    <CardProduct 
+                                        key={i}
+                                        image={prod.images[0]}
+                                        price={prod.price}
+                                        productName={prod.productName}
+                                        stock={prod.stock}
+                                        id={prod._id}
+                                        wishList={prod.wishList}
+                                        wishListId={prod.wishListId}
+                                    />
+                                ))}
                             </div>
                         </div>
                     </div>

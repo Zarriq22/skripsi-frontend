@@ -3,8 +3,9 @@ import Popup from "../../components/ui/Popup";
 import Form from "../../components/ui/Form";
 import ScrollView from "../../components/ui/Scroll";
 import httpRequest from "../../plugin/httpRequest";
-import { category } from "../../plugin/lookup";
+import { category, gender } from "../../plugin/lookup";
 import LoadingRequest from "../../components/ui/loading";
+import axios from "axios";
 
 class ModalProduk extends Component {
     constructor(props) {
@@ -37,6 +38,15 @@ class ModalProduk extends Component {
                 dataSource: 'kategori',
             },
             {
+                name: 'gender',
+                label: 'Gender Produk',
+                required: true,
+                placeholder: 'Masukkan Gender Produk',
+                type: 'select',
+                className: 'form-input',
+                dataSource: 'gender',
+            },
+            {
                 name: 'price',
                 label: 'Harga Produk',
                 type: 'number',
@@ -61,7 +71,7 @@ class ModalProduk extends Component {
                 className: 'form-input'
             },
             {
-                name: 'image',
+                name: 'images',
                 label: 'Gambar Produk',
                 type: 'file',
                 required: true,
@@ -109,39 +119,72 @@ class ModalProduk extends Component {
     };
 
     onSubmit = async () => {
-        let data = this.formRef.current.state.formData
-        this.setState({ loadingRequest: true })
-        if (data._id) {
-            try {
-                let result = await httpRequest(process.env.REACT_APP_BASE_URL, 'products', 'PUT', {
-                    values: data,
-                    key: data._id
-                })
-                
-                if (result) {
-                    this.hideModal()
-                    this.setState({ loadingRequest: false })
-                    this.props.refreshData()
-                }
-            } catch (e) {
-                console.log(e)
-                this.setState({ loadingRequest: false })
+        const data = this.formRef.current.state.formData;     
+        const uploadImageId = this.formRef.current.state.uploadImageId;    
+        const files = data.images;                                 
+        const isEdit = Boolean(data._id);
+
+        // console.log(files)
+        // return
+
+        this.setState({ loadingRequest: true, status: '' });
+
+        try {
+            const productPayload = { values: data, key: data._id };
+            const method = isEdit ? 'PUT' : 'POST';
+
+            const productRes = await httpRequest(
+                process.env.REACT_APP_BASE_URL,
+                'products',
+                method,
+                productPayload
+            );
+
+            const productId = isEdit ? data._id : productRes?.data?._id;
+            let uploadId = data.uploadImageId || uploadImageId;
+
+            if (files && files.length) {
+                const formData = new FormData();
+                files.forEach(file => formData.append('file', file));
+                formData.append('productId', productId);
+
+                const uploadUrl = uploadId
+                    ? `${process.env.REACT_APP_BASE_URL}upload/${uploadId}?mode=append`
+                    : `${process.env.REACT_APP_BASE_URL}upload`;
+
+                const method = uploadId ? 'put' : 'post';
+
+                const response = await axios({
+                    method,
+                    url: uploadUrl,
+                    data: formData,
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                uploadId = response.data.upload._id;
             }
-        } else {
-            try {
-                let result = await httpRequest(process.env.REACT_APP_BASE_URL, 'products', 'POST', {
-                    values: data
-                })
-                
-                if (result) {
-                    this.hideModal()
-                    this.setState({ loadingRequest: false })
-                    this.props.refreshData()
-                }
-            } catch (e) {
-                console.log(e)
-                this.setState({ loadingRequest: false })
-            }
+
+            if (uploadId && (!isEdit || !data.uploadId)) {
+                await httpRequest(
+                    process.env.REACT_APP_BASE_URL,
+                    'products',
+                    'PUT',
+                    {
+                        key: productId,
+                        values: { 
+                            uploadImageId: uploadId
+                        }   // hanya kirim uploadId
+                    }
+                );
+            }   
+
+            this.hideModal();
+            this.props.refreshData();
+            this.setState({ loadingRequest: false, status: 'Sukses menyimpan produk!' });
+
+        } catch (err) {
+            console.error(err);
+            this.setState({ loadingRequest: false, status: 'Gagal menyimpan produk!' });
         }
     };
 
@@ -153,7 +196,8 @@ class ModalProduk extends Component {
                 onSubmit={this.onSubmit}
                 formTitle={this.props.formTitle}
                 dataSource={{ 
-                    kategori: category() // Tambahkan dataSource dengan nama yang sesuai
+                    kategori: category(),
+                    gender: gender()
                 }}
             />
         )
@@ -168,7 +212,7 @@ class ModalProduk extends Component {
                 onHiding={this.hideModal}
                 title={`Form ${this.props.type === 'edit' ? 'Edit' : 'Tambah'} Produk`}
                 height={'50vh'}
-                width={'w-[85%] md:w-[30vw]'}
+                width={'w-[85%] md:w-[50vw]'}
                 toolbarItems={this.toolbarItems}
             >
                 <div>

@@ -124,7 +124,7 @@ class Keranjang extends Component {
                         />
                     </div>
                 </div> */}
-                <div style={{ height: 'calc(100vh - 230px)' }} className="flex flex-col justify-between gap-[24px] overflow-y-scroll">
+                <div style={{ height: 'calc(100vh - 230px)' }} className="flex flex-col gap-[24px] overflow-y-scroll">
                     {dataKeranjang.map((item, index) => (
                         <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
                             {/* Checkbox */}

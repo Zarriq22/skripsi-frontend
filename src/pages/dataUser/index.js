@@ -26,8 +26,13 @@ class DataUser extends Component {
             { 
                 header: "Role", 
                 field: "userType",
-                sortable: true 
+                sortable: true, 
             },
+            {
+                header: "Email",
+                field: "email",
+                sortable: true,
+            }
         ]
 
         this.dataTableRef = React.createRef();

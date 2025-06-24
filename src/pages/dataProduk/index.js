@@ -102,6 +102,7 @@ class DataProduk extends Component {
 
         try {
             await httpRequest(process.env.REACT_APP_BASE_URL, `products/${id}`, 'DELETE');
+            await httpRequest(process.env.REACT_APP_BASE_URL, `upload/product/${id}`, 'DELETE');
 
             notify('Produk berhasil dihapus', 'success');
             this.getAllData()
@@ -137,7 +138,7 @@ class DataProduk extends Component {
                         ref={this.dataTableRef}
                         columns={this.columns}
                         data={dataProduct}
-                        height={'calc(100vh - 320px)'}
+                        height={'calc(100vh - 325px)'}
                         menuRightClick={true}
                         onToolbarPreparing={this.onToolbarPreparing}
                     />
