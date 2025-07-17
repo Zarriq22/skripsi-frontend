@@ -32,7 +32,7 @@ class SemuaStatus extends Component {
                     const status = statusPesanan().find(val => val.value === String(item.status));
                     return (
                         <div key={index} className="flex gap-4 border p-4 rounded shadow">
-                            <img src={generateImage(item.images[0])} alt="" className="w-[100px] h-[100px] object-cover" />
+                            <img src={generateImage(item.image[0])} alt="" className="w-[100px] h-[100px] object-cover" />
                             <div className="flex flex-col gap-1 w-full">
                                 <div className="flex justify-between">
                                     <span className="font-semibold">{item.productName}</span>
@@ -40,7 +40,7 @@ class SemuaStatus extends Component {
                                         {status?.label || "Tidak diketahui"}
                                     </span>
                                 </div>
-                                <span className="text-gray-600">{item.description}</span>
+                                {/* <span className="text-gray-600">{item.description}</span> */}
                                 <span className="text-red-600 font-semibold">Rp {formatNumber(item.price)}</span>
                             </div>
                         </div>

@@ -156,6 +156,25 @@ class DetailProduk extends Component {
         const { product, activeImage, loading, loadingRequest, relatedProduct } = this.state
         const userData = JSON.parse(localStorage.getItem('userData'));
 
+        const desc = product.description;
+        let deskripsiUtama
+        let listSpesifikasi = [];
+
+        if (desc) {
+            const potongDi = 'Spesifikasi Produk';
+            const index = desc.indexOf(potongDi);
+            deskripsiUtama = index !== -1 ? desc.slice(0, index).trim() : desc;
+            
+            if (index !== -1) {
+                const rawSpesifikasi = desc.slice(index + "Spesifikasi Produk:".length).trim();
+                listSpesifikasi = rawSpesifikasi
+                    .split("*") // pisahkan berdasarkan '*'
+                    .map(s => s.trim()) // hilangkan spasi di awal/akhir
+                    .filter(s => s.length > 0); // buang yang kosong
+            }
+        }
+
+
         if (loading) {
             return <Loading />
         }
@@ -168,7 +187,7 @@ class DetailProduk extends Component {
                         </Link>
                     </div>
                     <div className="flex flex-col lg:flex-row lg:justify-start gap-6">
-                        <div className="flex flex-col justify-center items-center gap-3 xl:w-5/2">
+                        <div className="flex flex-col justify-center items-center gap-3 xl:w-3/2">
                             <div className="rounded p-3 text-center">
                                 {product.image && product.image[0] ? (
                                     <img 
@@ -218,7 +237,7 @@ class DetailProduk extends Component {
                             <div className="flex flex-col gap-3">
                                 <div>
                                     <h2 className="font-bold text-2xl">Deskripsi Produk</h2>
-                                    <p className="mt-3">{product.description}</p>
+                                    <p className="mt-3">{deskripsiUtama}</p>
                                 </div>
                             </div>
                             <hr />
@@ -250,7 +269,12 @@ class DetailProduk extends Component {
                     <div className="flex flex-col gap-3">
                         <div>
                             <h2 className="font-bold text-2xl">Spesifikasi</h2>
-                            <p className="mt-3">{product.spesifikasi || 'Spesifikasi tidak tersedia'}</p>
+                            {/* <p className="mt-3">{spesifikasi || 'Spesifikasi tidak tersedia'}</p> */}
+                            <ul>
+                                {listSpesifikasi.map((item, index) => (
+                                    <li key={index}>* {item}</li>
+                                ))}
+                            </ul>
                         </div>
                         <div>
                             <h2 className="font-bold text-2xl">Produk Terkait</h2>
