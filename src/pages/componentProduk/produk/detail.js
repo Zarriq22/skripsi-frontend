@@ -271,6 +271,7 @@ class DetailProduk extends Component {
                             <h2 className="font-bold text-2xl">Spesifikasi</h2>
                             {/* <p className="mt-3">{spesifikasi || 'Spesifikasi tidak tersedia'}</p> */}
                             <ul>
+                                {listSpesifikasi.length === 0 && <p>Spesifikasi tidak tersedia</p>}
                                 {listSpesifikasi.map((item, index) => (
                                     <li key={index}>* {item}</li>
                                 ))}

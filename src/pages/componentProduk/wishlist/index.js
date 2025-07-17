@@ -53,6 +53,7 @@ class ProductFavorite extends Component {
             <div className="container-fluid">
                 <div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6" style={{ padding: '8px 16px 24px 16px', gap: '24px' }}>
+                        {this.state.allProduct.length === 0 && <div style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Belum ada produk yang di favoritkan</div>}
                         {this.state.allProduct.map((item, index) => {
                             return (
                                 <CardProduct 
