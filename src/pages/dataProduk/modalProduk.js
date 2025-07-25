@@ -124,13 +124,13 @@ class ModalProduk extends Component {
         const files = data.images;                                 
         const isEdit = Boolean(data._id);
 
-        // console.log(files)
-        // return
-
         this.setState({ loadingRequest: true, status: '' });
 
         try {
-            const productPayload = { values: data, key: data._id };
+            const productPayload = { values: {
+                ...data,
+                link: `detail-product/${data._id}`
+            }, key: data._id };
             const method = isEdit ? 'PUT' : 'POST';
 
             const productRes = await httpRequest(
@@ -172,8 +172,9 @@ class ModalProduk extends Component {
                     {
                         key: productId,
                         values: { 
-                            uploadImageId: uploadId
-                        }   // hanya kirim uploadId
+                            uploadImageId: uploadId,
+                            link: `detail-product/${productId}`
+                        }
                     }
                 );
             }   

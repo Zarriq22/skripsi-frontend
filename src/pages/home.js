@@ -27,6 +27,7 @@ class Home extends Component {
     }
 
     componentDidMount() {
+        localStorage.clear();
         window.addEventListener("scroll", this.handleScroll);
         document.addEventListener("mousedown", this.handleClickOutside);
         this.getProduct()

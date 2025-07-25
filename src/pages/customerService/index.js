@@ -4,6 +4,7 @@ import loadingChat from '../../assets/gif/loading.gif'
 import Button from "../../components/ui/Button";
 import ReactMarkdown from "react-markdown";
 import { formatNumber, generateImage } from "../../plugin/helper";
+import { Link } from "react-router-dom";
 
 class CustomerService extends Component {
     constructor(props) {
@@ -208,7 +209,28 @@ class CustomerService extends Component {
                                         color: msg.role === 'user' ? '#fff' : '#000',
                                         maxWidth: '70%'
                                     }}>
-                                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                                        <ReactMarkdown
+                                            components={{
+                                                a: ({ href, children }) => {
+                                                    const currentOrigin = window.location.origin; // host saat ini, misal http://localhost:3000 atau https://domain.com
+
+                                                    // Cek apakah link berasal dari host yang sama
+                                                    if (href.startsWith(currentOrigin)) {
+                                                        const path = href.replace(currentOrigin, '');
+                                                        return <Link to={path} className="text-blue-500 underline">{children}</Link>;
+                                                    }
+
+                                                    // Kalau eksternal, tetap pakai <a>
+                                                    return (
+                                                        <a href={href} target="_blank" rel="noopener noreferrer">
+                                                        {children}
+                                                        </a>
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            {msg.content}
+                                        </ReactMarkdown>
                                         {/* {msg.content} */}
                                     </div>
                                 </div>
