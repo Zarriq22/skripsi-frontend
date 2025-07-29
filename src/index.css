@@ -780,6 +780,22 @@ li.active {
   animation: spin 1s linear infinite;
 }
 
+.chatbot {
+  background: blue;
+  color: white;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 16px;
+  position: fixed;
+  right: 10%;
+  bottom: 10%;
+  cursor: pointer;
+}
+
 @media screen and (min-width: 980px) {
   .chat-container {
     height: calc(100vh - 370px);

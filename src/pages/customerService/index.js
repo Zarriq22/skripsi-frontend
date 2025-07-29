@@ -162,7 +162,7 @@ class CustomerService extends Component {
             <div className="container-fluid">
                 <div className="bg-white">
                     <div className="pb-3 font-bold text-2xl flex items-center justify-between">
-                        <span>Customer Service</span>
+                        <span>ZarrionF Bot</span>
                         <Button 
                             text="Hapus Chat"
                             cssClass="btn-danger text-sm"

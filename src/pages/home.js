@@ -7,6 +7,7 @@ import { withNavigate } from "../router/custom/withNavigate";
 import CardProduct from "../components/ui/Card";
 import { category } from "../plugin/lookup";
 import httpRequest from "../plugin/httpRequest";
+import ChatBotBox from "../components/chatbot/chatBotBox";
 
 class Home extends Component {
     constructor(props) {
@@ -24,6 +25,7 @@ class Home extends Component {
         this.acountRef = React.createRef();
         this.buttonRef = React.createRef();
         this.buttonUserRef = React.createRef();
+        this.chatbotRef = React.createRef();
     }
 
     componentDidMount() {
@@ -91,6 +93,10 @@ class Home extends Component {
 
     sendUrl = (url) => {
         window.open(url);
+    }
+
+    chatbotMessage = () => {
+        this.chatbotRef.current.showChatbot()
     }
 
     render() {
@@ -377,7 +383,22 @@ class Home extends Component {
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="chatbot-box">
+                                <Button 
+                                    text={<i className="fa-solid fa-headset"></i>}
+                                    cssClass="chatbot" 
+                                    onClick={() => this.chatbotMessage()}
+                                />
+                                {/* <button className="chatbot" onClick={this.handleChatbot}>
+                                    <i className="fa-solid fa-headset"></i>
+                                </button> */}
+                            </div>
                         </div>
+
+                        <ChatBotBox 
+                            ref={this.chatbotRef}
+                        />
                     </article>
                 </div>
             </>

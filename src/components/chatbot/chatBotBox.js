@@ -23,28 +23,14 @@ class ChatBotBox extends Component {
     }
 
     componentDidMount() {
-        this.getChatHistory();
-    }
-
-    getChatHistory = async () => {
-        const userData = JSON.parse(localStorage.getItem('userData'))
-        try {
-           const res = await httpRequest(process.env.REACT_APP_BASE_URL, `chat/history/${userData.user.id}`, 'GET');
-
-            const messages = res.history.flatMap(item =>
-                item.messages.map(msg => ({
-                    role: msg.role,
-                    content: msg.content
-                }))
-            );
-
-            this.setState({ 
-                chatHistory: res.history,
-                chatbotMessages: messages 
-            });
-        } catch (error) {
-            console.error(error);
-        }
+        this.setState(prevState => ({
+            chatbotMessages: [
+                ...prevState.chatbotMessages,
+                { role: 'assistant', content: 'Halo! Ada yang bisa saya bantu hari ini?' }
+            ]
+        }), () => {
+            this.scrollChatbot();
+        });
     }
 
     showChatbot = () => {
@@ -59,8 +45,8 @@ class ChatBotBox extends Component {
     }
 
     sendChatbotMessage = async () => {
+        this.scrollChatbot();
         const newMessage = this.state.chatbotInput;
-        const userData = JSON.parse(localStorage.getItem('userData'))
         if (!newMessage) return;
     
         const updatedMessages = [
@@ -73,14 +59,11 @@ class ChatBotBox extends Component {
             chatbotInput: '',
             showLoadingChat: true
         });
-
-        await httpRequest(process.env.REACT_APP_BASE_URL, `chat`, 'GET')
     
         try {
             const res = await(httpRequest(process.env.REACT_APP_BASE_URL, `chat`, 'POST', {
                 values: {
-                    userId: userData.user.id,
-                    message: updatedMessages
+                    message: [{ role: 'user', content: newMessage }],
                 }
             }))
     
@@ -89,10 +72,18 @@ class ChatBotBox extends Component {
             this.setState({
                 chatbotMessages: [...updatedMessages, reply],
                 showLoadingChat: false
+            }, () => {
+                this.scrollChatbot();
             });
-            this.scrollChatbot();
         } catch (err) {
             console.error(err);
+            const replay = { role: 'assistant', content: 'Maaf, DeepSeek sedang tidak bisa menerima pesan, coba lagi nanti.' };
+            this.setState({ 
+                chatbotMessages: [...updatedMessages, replay], 
+                showLoadingChat: false
+            }, () => {
+                this.scrollChatbot()
+            });
         }
     }
 
@@ -111,24 +102,13 @@ class ChatBotBox extends Component {
     }
 
     render() {
-        // const { chatHistory, chatbotMessages } = this.state
-        // const messages = chatHistory.flatMap(item =>
-        //     item.messages.map(msg => ({
-        //         role: msg.role,
-        //         content: msg.content
-        //     }))
-        // );
-        // if (messages) {
-        //     chatbotMessages.push(...messages)
-        // }
-        // console.log(chatbotMessages)
         return (
             <>
                 {this.state.showChatbot && (
                     <div style={{
                         position: 'fixed',
-                        bottom: '100px',
-                        right: '30px',
+                        bottom: '15%',
+                        right: '10%',
                         width: '300px',
                         height: '400px',
                         backgroundColor: 'white',
@@ -142,10 +122,10 @@ class ChatBotBox extends Component {
                     }}>
                         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
                             <div style={{ padding: '10px', borderBottom: '1px solid #ccc', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between' }}>
-                                <span>Chatbot</span>
+                                <span>ZarrionF Bot</span>
                                 <span style={{ cursor: 'pointer' }} onClick={() => this.setState({ showChatbot: false })}>✖️</span>
                             </div>
-                            <div className="chat-container" style={{  height: '63%', maxHeight: '63%', overflowY: 'auto', padding: '12px', background: '#f0f0f0', borderRadius: '8px', marginBottom: '12px' }}>
+                            <div className="chat-container" style={{  height: 'calc(100vh - 650px)', overflowY: 'auto', padding: '12px', background: '#f0f0f0', borderRadius: '8px', marginBottom: '12px' }}>
                                 {this.state.chatbotMessages.map((msg, index) => (
                                     <div key={index} style={{
                                         textAlign: msg.role === 'user' ? 'right' : 'left',
@@ -182,7 +162,7 @@ class ChatBotBox extends Component {
                                     </div>
                                 )}
                             </div>
-                            <div style={{ position: 'absolute', bottom: '10%', width: '100%', padding: '0 10px 10px 10px', display: 'flex', gap: '6px' }}>
+                            {/* <div style={{ position: 'absolute', bottom: '10%', width: '100%', padding: '0 10px 10px 10px', display: 'flex', gap: '6px' }}>
                                 <div className="quick-questions">
                                     {this.state.quickQuestions.map((item, idx) => (
                                         <button
@@ -202,7 +182,7 @@ class ChatBotBox extends Component {
                                     ))}
 
                                 </div>
-                            </div>
+                            </div> */}
                             <div style={{ padding: '10px', borderTop: '1px solid #ccc', display: 'flex', position: 'absolute', bottom: '0', width: '100%' }}>
                                 <input
                                     type="text"
